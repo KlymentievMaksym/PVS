@@ -1,4 +1,12 @@
-*/Tex*
 *__pycache__*
-!*/Tex/*.tex
-!*/Tex/*.pdf
+*.aux
+*.bbl
+*.bcf
+*.fdb*
+*.fls
+*.log
+*.out
+*.run*
+*.synctex*
+*.toc
+*.xdv
