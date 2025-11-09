@@ -30,6 +30,7 @@ class HttpClient:
         duration = time.perf_counter() - start_time
         throughput = total_requests / duration
         print(f"[Name] {name}")
+        print(f"[Clients|Requests] {per_worker} requests each for {self.concurrency} clients")
         print(f"[Sent] {total_requests} requests in {duration:.2f} seconds")
         print(f"[Count] {final_value}")
         print(f"[Throughput]: {throughput:.2f} requests/sec")
