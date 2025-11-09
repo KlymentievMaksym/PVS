@@ -63,7 +63,6 @@ class CounterMem(Counter):
     def __init__(self):
         super().__init__()
         self.value = 0
-        # self._lock = Lock()
 
     def inc_count(self):
         with self._lock:
