@@ -2,7 +2,7 @@ import threading
 import time
 
 import hazelcast
-from tqdm import tqdm
+# from tqdm import tqdm
 
 from Counters import AtomicLongCounter, MapNoLockCounter, MapOptimisticCounter, MapPessimisticCounter
 
@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     print("[MAIN] Starting different Counters...")
     try:
-        for name, cls in tqdm(variants.items()):
+        for name, cls in variants.items():
             print("Running:", name)
             val, took = run_benchmark(cls, client, threads=10, increments_per_thread=10_000)
             print(f"  result: {val}  (expected: 100000)  time: {took:.3f}s\n")
