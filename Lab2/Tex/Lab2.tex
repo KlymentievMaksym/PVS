@@ -1,0 +1,103 @@
+\documentclass{article}
+
+\input{../../packages.tex}
+
+\graphicspath{ {../Images/} }
+
+\begin{document}
+    \begin{titlepage}
+        \begin{center}
+
+        Міністерство освіти і науки України
+        
+        НТУУ «Київський політехнічний інститут»
+        
+        Фізико-технічний інститут
+        \vspace{3.3cm}
+        
+        {\textbf{Проектування високонавантажених систем}\\Лабораторна робота No2\\MassiveCounterIncrement}
+
+        \vspace{10cm}
+
+        \begin{flushright}
+            \textbf{Виконав:}\\Студент 4-го курсу\\групи ФІ-21\\Климентьєв Максим\\
+            \textbf{Перевірив:}\\\text{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}
+        \end{flushright}
+
+        \end{center}
+    \end{titlepage}
+    \newpage
+
+    \pagenumbering{gobble}
+    \tableofcontents
+    \cleardoublepage
+    \pagenumbering{arabic}
+    \setcounter{page}{3}
+
+    \newpage
+    \section{Код реалізації}
+    \lstinputlisting[language=Python, title=BaseCounter.py]{../Counters/BaseCounter.py}
+    \lstinputlisting[language=Python, title=AtomicLongCounter.py]{../Counters/AtomicLongCounter.py}
+    \lstinputlisting[language=Python, title=MapNoLockCounter.py]{../Counters/MapNoLockCounter.py}
+    \lstinputlisting[language=Python, title=MapOptimisticCounter.py]{../Counters/MapOptimisticCounter.py}
+    \lstinputlisting[language=Python, title=MapPessimisticCounter.py]{../Counters/MapPessimisticCounter.py}
+    \lstinputlisting[language=Python, title=HazelcastCounters.py]{../HazelcastCounters.py}
+    \lstinputlisting[language=Dockerfile, title=Dockerfile]{../Dockerfile}
+    \lstinputlisting[style=yaml, title=docker-compose.yml]{../docker-compose.yml}
+    \lstinputlisting[style=yaml, title=hazelcast.yaml]{../hazelcast.yaml}
+
+    % \begin{lstlisting}[language=Dockerfile, title=Dockerfile]
+    % \begin{lstlisting}[language=YAML, title=docker-compose.yml]
+    % \begin{lstlisting}[language=YAML, title=hazelcast.yaml]
+
+    \newpage
+    \section{Результати}
+Результат:  
+
+[PRE] Connecting to Hazelcast...
+
+[MAIN] Starting different Counters...
+
+[MAIN] Running: Map no-lock
+
+[Results] Received: 15414
+
+[Results] Expected: 100000
+
+[Results] Time: 22.10 sec
+
+ ------------------------------------------------------------
+
+[MAIN] Running: Map pessimistic
+
+[Results] Received: 100000
+
+[Results] Expected: 100000
+
+[Results] Time: 123.39 sec
+
+ ------------------------------------------------------------
+
+[MAIN] Running: Map optimistic
+
+[Results] Received: 100000
+
+[Results] Expected: 100000
+
+[Results] Time: 117.23 sec
+
+ ------------------------------------------------------------
+
+[MAIN] Running: AtomicLong (CP)
+
+[Results] Received: 100000
+
+[Results] Expected: 100000
+
+[Results] Time: 11.59 sec
+
+ ------------------------------------------------------------
+
+    \newpage
+    \section{Лог, який видають ноди Hazelcast}
+\end{document}

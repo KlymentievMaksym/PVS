@@ -1,13 +1,10 @@
 from Counters.BaseCounter import BaseCounter
 
-# =========================================================
-# 1) Map без блокувань (демонстрація race condition)
-# =========================================================
+
 class MapNoLockCounter(BaseCounter):
     def __init__(self, client, name="map_no_lock", key="counter"):
         super().__init__(client, name, key)
         self.map = client.get_map(name).blocking()
-        # Ініціалізуємо на 0 (якщо немає)
         if self.map.get(key) is None:
             self.map.put(key, 0)
 

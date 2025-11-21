@@ -2,14 +2,9 @@ import threading
 import time
 
 import hazelcast
-# from tqdm import tqdm
 
 from Counters import AtomicLongCounter, MapNoLockCounter, MapOptimisticCounter, MapPessimisticCounter
 
-
-# =========================================================
-# Бенчмарк функція
-# =========================================================
 def run_benchmark(counter_cls, client, threads=10, increments_per_thread=10_000):
     counter = counter_cls(client)
     # reset value to 0 where possible
@@ -29,7 +24,6 @@ def run_benchmark(counter_cls, client, threads=10, increments_per_thread=10_000)
         th.join()
     elapsed = time.perf_counter() - start
 
-    # прочитати фінальне значення
     if isinstance(counter, AtomicLongCounter):
         final = counter.atomic.get()
     else:
@@ -37,33 +31,27 @@ def run_benchmark(counter_cls, client, threads=10, increments_per_thread=10_000)
     return final, elapsed
 
 
-# =========================================================
-# Простий CLI для запуску
-# =========================================================
 if __name__ == "__main__":
-    # Налаштуй client так, щоб він підключався до твоїх Hazelcast нод
-    print("[PRE] Starting Hazelcast...")
+    print("[PRE] Connecting to Hazelcast...")
     client = hazelcast.HazelcastClient(
-        # тут можна вказати адреси членів (пример)
         cluster_name="dev",
-        # cluster_members або cloud config за потреби
-        # кластерні адреси наприклад: ["127.0.0.1:5701","127.0.0.1:5702","127.0.0.1:5703"]
-        cluster_members=["127.0.0.1:5701","127.0.0.1:5702","127.0.0.1:5703"]
+        cluster_members=["hazelcast1:5701","hazelcast2:5702","hazelcast3:5703"]
     )
 
 
+    print("[MAIN] Starting different Counters...")
     variants = {
         "Map no-lock": MapNoLockCounter,
         "Map pessimistic": MapPessimisticCounter,
         "Map optimistic": MapOptimisticCounter,
         "AtomicLong (CP)": AtomicLongCounter,
     }
-
-    print("[MAIN] Starting different Counters...")
+    threads = 10
+    increments_per_thread = 10_000
     try:
         for name, cls in variants.items():
-            print("Running:", name)
-            val, took = run_benchmark(cls, client, threads=10, increments_per_thread=10_000)
-            print(f"  result: {val}  (expected: 100000)  time: {took:.3f}s\n")
+            print("[MAIN] Running:", name)
+            val, took = run_benchmark(cls, client, threads=threads, increments_per_thread=increments_per_thread)
+            print(f"[Results] Received: {val}\n[Results] Expected: {increments_per_thread * threads}\n[Results] Time: {took:.2f} sec\n", "-"*60)
     finally:
         client.shutdown()

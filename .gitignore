@@ -1,7 +1,8 @@
 *__pycache__*
 *.aux
-*.bbl
+*.bbl*
 *.bcf
+*.blg
 *.fdb*
 *.fls
 *.log
@@ -10,3 +11,4 @@
 *.synctex*
 *.toc
 *.xdv
+*.minted

@@ -1,8 +1,5 @@
 from Counters.BaseCounter import BaseCounter
 
-# =========================================================
-# 2) Map з песимістичним блокуванням
-# =========================================================
 class MapPessimisticCounter(BaseCounter):
     def __init__(self, client, name="map_pessimistic", key="counter"):
         super().__init__(client, name, key)

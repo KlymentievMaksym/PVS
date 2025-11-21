@@ -1,8 +1,5 @@
 from Counters.BaseCounter import BaseCounter
 
-# =========================================================
-# 3) Map з оптимістичним підходом (replace loop)
-# =========================================================
 class MapOptimisticCounter(BaseCounter):
     def __init__(self, client, name="map_optimistic", key="counter", max_retries=100):
         super().__init__(client, name, key)
@@ -16,7 +13,7 @@ class MapOptimisticCounter(BaseCounter):
             old = self.map.get(self.key) or 0
             new = old + 1
             # replace returns True if successful (atomic compare-and-replace)
-            ok = self.map.replace(self.key, old, new)
+            ok = self.map.replace_if_same(self.key, old, new)
             if ok:
                 return
         # якщо після max_retries не вдалося — як fallback зробимо блокування

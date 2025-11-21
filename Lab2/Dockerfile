@@ -5,6 +5,7 @@ WORKDIR /app
 COPY req.txt .
 RUN pip install --no-cache-dir -r req.txt
 
+COPY ./Counters ./Counters
 COPY HazelcastCounters.py .
 
 CMD ["python", "HazelcastCounters.py"]
