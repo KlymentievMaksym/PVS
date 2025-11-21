@@ -24,11 +24,14 @@ def run_benchmark(counter_cls, client, threads=10, increments_per_thread=10_000)
         th.join()
     elapsed = time.perf_counter() - start
 
+    throughput = (threads * increments_per_thread) / elapsed
+
     if isinstance(counter, AtomicLongCounter):
         final = counter.atomic.get()
     else:
         final = client.get_map(counter.name).blocking().get(counter.key)
-    return final, elapsed
+
+    return final, elapsed, throughput
 
 
 if __name__ == "__main__":
@@ -51,7 +54,7 @@ if __name__ == "__main__":
     try:
         for name, cls in variants.items():
             print("[MAIN] Running:", name)
-            val, took = run_benchmark(cls, client, threads=threads, increments_per_thread=increments_per_thread)
-            print(f"[Results] Received: {val}\n[Results] Expected: {increments_per_thread * threads}\n[Results] Time: {took:.2f} sec\n", "-"*60)
+            val, elapsed, throughput = run_benchmark(cls, client, threads=threads, increments_per_thread=increments_per_thread)
+            print(f"[Results] Received: {val}\n[Results] Expected: {increments_per_thread * threads}\n[Results] Time: {elapsed:.2f} sec\n[Results] Throughput: {throughput:.2f} requests/sec\n", "-"*60)
     finally:
         client.shutdown()

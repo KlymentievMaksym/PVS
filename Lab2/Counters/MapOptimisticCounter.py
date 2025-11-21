@@ -1,28 +1,17 @@
 from Counters.BaseCounter import BaseCounter
 
 class MapOptimisticCounter(BaseCounter):
-    def __init__(self, client, name="map_optimistic", key="counter", max_retries=100):
-        super().__init__(client, name, key)
-        self.map = client.get_map(name).blocking()
-        if self.map.get(key) is None:
-            self.map.put(key, 0)
-        self.max_retries = max_retries
+    def __init__(self, client, name="map_optimistic", key="counter"):
+        super().__init__(client, name, key)  # HazelcastInstance hz = Hazelcast.newHazelcastInstance();
+        self.map = client.get_map(name).blocking()  # IMap<String, Value> map = hz.getMap( "map" );
+        if self.map.get(key) is None:  # String key = "1";
+            self.map.put(key, 0)  # map.put( key, new Value() );
 
     def increment(self):
-        for _ in range(self.max_retries):
-            old = self.map.get(self.key) or 0
-            new = old + 1
-            # replace returns True if successful (atomic compare-and-replace)
-            ok = self.map.replace_if_same(self.key, old, new)
-            if ok:
-                return
-        # якщо після max_retries не вдалося — як fallback зробимо блокування
-        # (щоб не втрачати значення)
-        # Простий fallback:
-        self.map.lock(self.key)
-        try:
-            v = self.map.get(self.key) or 0
-            self.map.put(self.key, v + 1)
-        finally:
-            self.map.unlock(self.key)
+        while True:  # for (; ; ) {
+            v = self.map.get(self.key)  # Value oldValue = map.get( key );
+            v += 1  # Value newValue = new Value( oldValue ); newValue.amount++;
+            # time.sleep(1e-2)  # Thread.sleep( 10 );
 
+            if self.map.replace(self.key, v):  # if ( map.replace( key, oldValue, newValue ) )
+                break  # break;

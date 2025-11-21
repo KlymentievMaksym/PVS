@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import hazelcast
+from tqdm import tqdm
 
 
 class BaseCounter(ABC):
@@ -13,5 +14,5 @@ class BaseCounter(ABC):
         pass
 
     def bulk_increment(self, n: int):
-        for _ in range(n):
+        for _ in tqdm(range(n), desc=f"{self.name}: "):
             self.increment()
