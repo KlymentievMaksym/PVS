@@ -1,5 +1,4 @@
-import time
-
+# import time
 from Counters.BaseCounter import BaseCounter
 
 
@@ -12,7 +11,7 @@ class MapNoLockCounter(BaseCounter):
 
     def increment(self):
         v = self.map.get(self.key) or 0  # Value value = map.get( key );
-        time.sleep(1e-2)  # Thread.sleep( 10 );
+        # time.sleep(1e-2)  # Thread.sleep( 10 );
         v += 1  # value.amount++;
         self.map.put(self.key, v)  # map.put( key, value );
 
