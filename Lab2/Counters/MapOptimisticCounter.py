@@ -1,3 +1,4 @@
+import time
 from Counters.BaseCounter import BaseCounter
 
 class MapOptimisticCounter(BaseCounter):
@@ -9,9 +10,9 @@ class MapOptimisticCounter(BaseCounter):
 
     def increment(self):
         while True:  # for (; ; ) {
-            v = self.map.get(self.key)  # Value oldValue = map.get( key );
+            v = self.map.get(self.key) or 0  # Value oldValue = map.get( key );
             v += 1  # Value newValue = new Value( oldValue ); newValue.amount++;
-            # time.sleep(1e-2)  # Thread.sleep( 10 );
+            time.sleep(1e-2)  # Thread.sleep( 10 );
 
             if self.map.replace(self.key, v):  # if ( map.replace( key, oldValue, newValue ) )
                 break  # break;

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import hazelcast
-from tqdm import tqdm
+# import time
+# from tqdm import tqdm
 
 
 class BaseCounter(ABC):
@@ -13,6 +14,16 @@ class BaseCounter(ABC):
     def increment(self):
         pass
 
-    def bulk_increment(self, n: int):
-        for _ in tqdm(range(n), desc=f"{self.name}: "):
+    def bulk_increment(self, n: int):  # , log_every: int = 1
+
+        # for _ in tqdm(range(n), desc=f"{self.name}: "):
+        for iteration in range(n):
+            # t0 = time.time()
             self.increment()
+            # dt = time.time() - t0
+            # avg = dt if avg is None else avg * 0.95 + dt * 0.05
+
+            # if iteration % log_every == 0:
+            #     eta = avg * (n - iteration)
+            #     print(f"[{iteration}/{n}] [{self.name}] ETA: {eta:.2f}s", flush=True)
+

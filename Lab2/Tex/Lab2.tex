@@ -98,6 +98,60 @@
 
  ------------------------------------------------------------
 
+\textbf{Не розумію у чому проблема, але на наступний день і далі воно більше не показувало такі хороші результати, навіть коли відкатувався до версії того дня.}
+
+[PRE] Connecting to Hazelcast...
+
+[MAIN] Starting different Counters...
+
+[MAIN] Running: Map no-lock
+
+[Results] Received: 10262
+
+[Results] Expected: 100000
+
+[Results] Time: 114.94 sec
+
+[Results] Throughput: 870.03 requests/sec
+
+ ------------------------------------------------------------
+
+[MAIN] Running: Map pessimistic
+
+[Results] Received: 100000
+
+[Results] Expected: 100000
+
+[Results] Time: 3186.91 sec
+
+[Results] Throughput: 31.38 requests/sec
+
+ ------------------------------------------------------------
+
+[MAIN] Running: Map optimistic
+
+[Results] Received: 10062
+
+[Results] Expected: 100000
+
+[Results] Time: 225.83 sec
+
+[Results] Throughput: 442.82 requests/sec
+
+ ------------------------------------------------------------
+
+[MAIN] Running: AtomicLong (CP)
+
+[Results] Received: 100000
+
+[Results] Expected: 100000
+
+[Results] Time: 14.97 sec
+
+[Results] Throughput: 6681.59 requests/sec
+
+ ------------------------------------------------------------
+
     \newpage
     \section{Лог, який видають ноди Hazelcast}
 \end{document}
