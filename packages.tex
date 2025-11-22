@@ -74,6 +74,29 @@
 }
 
 
+\definecolor{logbg}{RGB}{245,245,245}
+\definecolor{logtext}{RGB}{30,30,30}
+\definecolor{logwarn}{RGB}{180,120,0}
+\definecolor{logerror}{RGB}{180,30,30}
+\definecolor{loginfo}{RGB}{0,90,180}
+
+\lstdefinestyle{hazellog}{
+    backgroundcolor=\color{logbg},
+    basicstyle=\ttfamily\tiny,
+    breaklines=true,
+    keepspaces=true,
+    showstringspaces=false,
+    numbers=left,
+    frame=single,
+    rulecolor=\color{black},
+    xleftmargin=5pt,
+    xrightmargin=5pt,
+    tabsize=2,
+    keywordstyle=\color{logwarn},
+    stringstyle=\color{logerror},
+    commentstyle=\color{loginfo},
+}
+
 \lstset{style=mystyle}
 
 

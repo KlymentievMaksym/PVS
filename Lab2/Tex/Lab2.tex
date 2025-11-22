@@ -106,13 +106,13 @@
 
 [MAIN] Running: Map no-lock
 
-[Results] Received: 10262
+[Results] Received: 14923
 
 [Results] Expected: 100000
 
-[Results] Time: 114.94 sec
+[Results] Time: 60.42 sec
 
-[Results] Throughput: 870.03 requests/sec
+[Results] Throughput: 1654.96 requests/sec
 
  ------------------------------------------------------------
 
@@ -122,21 +122,21 @@
 
 [Results] Expected: 100000
 
-[Results] Time: 3186.91 sec
+[Results] Time: 3232.21 sec
 
-[Results] Throughput: 31.38 requests/sec
+[Results] Throughput: 30.94 requests/sec
 
  ------------------------------------------------------------
 
 [MAIN] Running: Map optimistic
 
-[Results] Received: 10062
+[Results] Received: 100000
 
 [Results] Expected: 100000
 
-[Results] Time: 225.83 sec
+[Results] Time: 162.34 sec
 
-[Results] Throughput: 442.82 requests/sec
+[Results] Throughput: 616.00 requests/sec
 
  ------------------------------------------------------------
 
@@ -146,12 +146,17 @@
 
 [Results] Expected: 100000
 
-[Results] Time: 14.97 sec
+[Results] Time: 17.34 sec
 
-[Results] Throughput: 6681.59 requests/sec
+[Results] Throughput: 5766.02 requests/sec
 
  ------------------------------------------------------------
 
     \newpage
     \section{Лог, який видають ноди Hazelcast}
+
+    33 Строка
+
+    \lstinputlisting[style=hazellog, language=sh]{../logs_.log}
+    % \lstinputlisting[basicstyle=\ttfamily\tiny, breaklines=true]{../logs_.log}
 \end{document}

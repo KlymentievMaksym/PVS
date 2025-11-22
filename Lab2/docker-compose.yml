@@ -7,7 +7,7 @@ services:
     volumes:
       - ./hazelcast.yaml:/opt/hazelcast/hazelcast.yaml
     environment:
-      - HZ_CLUSTERNAME=dev
+      HAZELCAST_CONFIG: /opt/hazelcast/hazelcast.yaml
 
   hazelcast2:
     image: hazelcast/hazelcast:5.4
@@ -17,7 +17,7 @@ services:
     volumes:
       - ./hazelcast.yaml:/opt/hazelcast/hazelcast.yaml
     environment:
-      - HZ_CLUSTERNAME=dev
+      HAZELCAST_CONFIG: /opt/hazelcast/hazelcast.yaml
 
   hazelcast3:
     image: hazelcast/hazelcast:5.4
@@ -27,8 +27,8 @@ services:
     volumes:
       - ./hazelcast.yaml:/opt/hazelcast/hazelcast.yaml
     environment:
-      - HZ_CLUSTERNAME=dev
-
+      HAZELCAST_CONFIG: /opt/hazelcast/hazelcast.yaml
+  
   python-client:
     build: .
     container_name: hz-client

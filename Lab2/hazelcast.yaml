@@ -11,3 +11,7 @@ hazelcast:
           - hazelcast1
           - hazelcast2
           - hazelcast3
+
+  cp-subsystem:
+    cp-member-count: 3
+    group-size: 3
