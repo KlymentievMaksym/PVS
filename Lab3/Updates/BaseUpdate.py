@@ -9,15 +9,11 @@ class BaseUpdate:
         self.user_id = user_id
         self.threads = threads
         self.increments = increments
-        self.utilities = Utilities(user_id, database_params, serializable)
+        self.utilities = Utilities(database_params, serializable)
         self.utilities.ensure_table
         self.utilities.ensure_user
 
     def run_threads(self, target):
-        """
-        target: function(thread_id) -> None, executed in each thread
-        Each thread should create its own connection/cursor inside.
-        """
         futures = []
         # start = time.perf_counter()
         with ThreadPoolExecutor(max_workers=self.threads) as ex:
@@ -32,8 +28,8 @@ class BaseUpdate:
 
     # @property
     def run(self):
-        self.utilities.reset_counter
+        self.utilities.reset_counter(self.user_id)
         # elapsed = self.run_threads(self.worker)
         self.run_threads(self.worker)
-        final = self.utilities.read_counter[0]
+        final = self.utilities.read_counter(self.user_id)[0]
         return final

@@ -13,22 +13,22 @@ if __name__ == "__main__":
 
     user_id = 1
     threads = 10
-    increments_per_thread = 10_0
+    increments_per_thread = 10_000
     expected = threads * increments_per_thread
 
     variants = {
-        # "Lost-update": LostUpdate,
+        "Lost-update": LostUpdate,
         "Serializable update": SerializableUpdate,
-        # "In-place update": InplaceUpdate,
-        # "Row-level locking": RowLevelLocking,
-        # "Optimistic concurrency control": OptimisticConcurrency,
+        "In-place update": InplaceUpdate,
+        "Row-level locking": RowLevelLocking,
+        "Optimistic concurrency control": OptimisticConcurrency,
     }
 
     for name, variant in variants.items():
         print(f"[INFO] Running: {name}")
-        print(f"[INFO] Connecting to PostgreSQL...")
+        # print(f"[INFO] Connecting to PostgreSQL...")
         var = variant(user_id, threads, increments_per_thread, database_params, serializable=(name == "Serializable update"))
-        print(f"[INFO] Starting time evaluation...")
+        # print(f"[INFO] Starting time evaluation...")
         start_total = time.perf_counter()
         final = var.run()
         total_time = time.perf_counter() - start_total

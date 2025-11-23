@@ -3,8 +3,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED, ISOLATION_LEVEL_
 
 
 class Utilities:
-    def __init__(self, user_id: int, database_params: dict, serializable: bool = False):
-        self.user_id = user_id
+    def __init__(self, database_params: dict, serializable: bool = False):
         self.database_params = database_params
         self.serializable = serializable
 
@@ -31,33 +30,33 @@ class Utilities:
                 """)
             connection.commit()
 
-    @property
-    def ensure_user(self):
+    # @property
+    def ensure_user(self, user_id: int):
         with self.new_connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO user_counter(user_id, counter, version)
                     VALUES (%s, 0, 0)
                     ON CONFLICT (user_id) DO NOTHING
-                """, (self.user_id,))
+                """, (user_id,))
             connection.commit()
 
-    @property
-    def reset_counter(self):
+    # @property
+    def reset_counter(self, user_id: int):
         connection = self.new_connection
         try:
             cursor = connection.cursor()
-            cursor.execute("UPDATE user_counter SET counter = 0, version = 0 WHERE user_id = %s", (self.user_id,))
+            cursor.execute("UPDATE user_counter SET counter = 0, version = 0 WHERE user_id = %s", (user_id,))
             connection.commit()
         finally:
             connection.close()
 
-    @property
-    def read_counter(self):
+    # @property
+    def read_counter(self, user_id: int):
         connection = self.new_connection
         try:
             cursor = connection.cursor()
-            cursor.execute("SELECT counter, version FROM user_counter WHERE user_id = %s", (self.user_id,))
+            cursor.execute("SELECT counter, version FROM user_counter WHERE user_id = %s", (user_id,))
             result = cursor.fetchone()
             return result if result else (0, 0)
         finally:

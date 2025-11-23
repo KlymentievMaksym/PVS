@@ -1,5 +1,5 @@
 from Updates.BaseUpdate import BaseUpdate
-import time
+# import time
 
 class SerializableUpdate(BaseUpdate):
     def worker(self, thread_id):
@@ -17,5 +17,5 @@ class SerializableUpdate(BaseUpdate):
                     break
                 except Exception as e:
                     connection.rollback()
-                    time.sleep(1e-3)
+                    # time.sleep(1e-3)
         connection.close()
