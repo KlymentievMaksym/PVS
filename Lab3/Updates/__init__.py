@@ -4,6 +4,6 @@ from Updates.OptimisticConcurrency import OptimisticConcurrency
 from Updates.RowLevelLocking import RowLevelLocking
 from Updates.SerializableUpdate import SerializableUpdate
 
-from Updates.Utilities import USER_ID, THREADS, INCREMENTS_PER_THREAD, EXPECTED, DB_CONFIG
+from Updates.Utilities import Utilities
 
-__all__ = ['InplaceUpdate', 'LostUpdate', 'OptimisticConcurrency', 'RowLevelLocking', 'SerializableUpdate', 'USER_ID', 'THREADS', 'INCREMENTS_PER_THREAD', 'EXPECTED', 'DB_CONFIG']
+__all__ = ['InplaceUpdate', 'LostUpdate', 'OptimisticConcurrency', 'RowLevelLocking', 'SerializableUpdate', 'Utilities']

@@ -1,45 +1,64 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED, ISOLATION_LEVEL_SERIALIZABLE
 
-# ---------- Конфіг з'єднання (зміни під свій PG) ----------
-DB_CONFIG = {
-    "host": "127.0.0.1",
-    "port": 5432,
-    "dbname": "testdb",
-    "user": "postgres",
-    "password": "postgres"
-}
 
-USER_ID = 1
-THREADS = 10
-INCREMENTS_PER_THREAD = 10_000
-EXPECTED = THREADS * INCREMENTS_PER_THREAD
+class Utilities:
+    def __init__(self, user_id: int, database_params: dict, serializable: bool = False):
+        self.user_id = user_id
+        self.database_params = database_params
+        self.serializable = serializable
 
-# ---------- Утиліти ----------
-def new_conn(serializable=False):
-    conn = psycopg2.connect(**DB_CONFIG)
-    conn.autocommit = False
-    if serializable:
-        conn.set_isolation_level(ISOLATION_LEVEL_SERIALIZABLE)
-    else:
-        conn.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
-    return conn
+    @property
+    def new_connection(self):
+        connection = psycopg2.connect(**self.database_params)
+        connection.autocommit = False
+        if self.serializable:
+            connection.set_isolation_level(ISOLATION_LEVEL_SERIALIZABLE)
+        else:
+            connection.set_isolation_level(ISOLATION_LEVEL_READ_COMMITTED)
+        return connection
 
-def reset_counter():
-    conn = new_conn()
-    try:
-        cur = conn.cursor()
-        cur.execute("UPDATE user_counter SET counter = 0, version = 0 WHERE user_id = %s", (USER_ID,))
-        conn.commit()
-    finally:
-        conn.close()
+    @property
+    def ensure_table(self):
+        with self.new_connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS user_counter (
+                        user_id INTEGER PRIMARY KEY,
+                        counter INTEGER NOT NULL DEFAULT 0,
+                        version INTEGER NOT NULL DEFAULT 0
+                    );
+                """)
+            connection.commit()
 
-def read_counter():
-    conn = new_conn()
-    try:
-        cur = conn.cursor()
-        cur.execute("SELECT counter, version FROM user_counter WHERE user_id = %s", (USER_ID,))
-        r = cur.fetchone()
-        return r
-    finally:
-        conn.close()
+    @property
+    def ensure_user(self):
+        with self.new_connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO user_counter(user_id, counter, version)
+                    VALUES (%s, 0, 0)
+                    ON CONFLICT (user_id) DO NOTHING
+                """, (self.user_id,))
+            connection.commit()
+
+    @property
+    def reset_counter(self):
+        connection = self.new_connection
+        try:
+            cursor = connection.cursor()
+            cursor.execute("UPDATE user_counter SET counter = 0, version = 0 WHERE user_id = %s", (self.user_id,))
+            connection.commit()
+        finally:
+            connection.close()
+
+    @property
+    def read_counter(self):
+        connection = self.new_connection
+        try:
+            cursor = connection.cursor()
+            cursor.execute("SELECT counter, version FROM user_counter WHERE user_id = %s", (self.user_id,))
+            result = cursor.fetchone()
+            return result if result else (0, 0)
+        finally:
+            connection.close()

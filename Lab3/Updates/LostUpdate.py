@@ -1,29 +1,15 @@
-from Updates.PgCounterBenchmark import PgCounterBenchmark
-from Updates.Utilities import new_conn, reset_counter, read_counter, USER_ID
+from Updates.BaseUpdate import BaseUpdate
 
-# ---------- 1) Lost-update ----------
-class LostUpdate(PgCounterBenchmark):
+
+class LostUpdate(BaseUpdate):
     def worker(self, thread_id):
-        # кожен потік створює своє підключення
-        conn = new_conn(serializable=False)
-        cur = conn.cursor()
-        for i in range(self.incs):
-            # окрема транзакція на запис
-            try:
-                cur.execute("BEGIN")
-                cur.execute("SELECT counter FROM user_counter WHERE user_id = %s", (USER_ID,))
-                row = cur.fetchone()
-                v = row[0] if row else 0
-                v += 1
-                cur.execute("UPDATE user_counter SET counter = %s WHERE user_id = %s", (v, USER_ID))
-                conn.commit()
-            except Exception as e:
-                conn.rollback()
-                # тут ми просто ідемо далі
-        conn.close()
-
-    def run(self):
-        reset_counter()
-        elapsed = self.run_threads(self.worker)
-        final = read_counter()[0]
-        return final, elapsed
+        connection = self.utilities.new_connection
+        cursor = connection.cursor()
+        for _ in range(self.increments):  # for (i in 1..10_000) {
+            cursor.execute("SELECT counter FROM user_counter WHERE user_id = %s", (self.user_id,))  # counter = cursor.execute(“SELECT counter FROM user_counter WHERE user_id = 1”).fetchone()
+            results = cursor.fetchone()
+            v = results[0]
+            v += 1  # counter = counter + 1
+            cursor.execute("UPDATE user_counter SET counter = %s WHERE user_id = %s", (v, self.user_id))  # cursor.execute(("update user_counter set counter = %s where user_id = %s", (counter, 1))
+            connection.commit()  # conn.commit()
+        connection.close()

@@ -1,0 +1,52 @@
+\documentclass{article}
+
+\input{../../packages.tex}
+
+\graphicspath{ {../Images/} }
+
+\begin{document}
+    \begin{titlepage}
+        \begin{center}
+
+        Міністерство освіти і науки України
+        
+        НТУУ «Київський політехнічний інститут»
+        
+        Фізико-технічний інститут
+        \vspace{3.3cm}
+        
+        {\textbf{Проектування високонавантажених систем}\\Лабораторна робота No2\\MassiveCounterIncrement}
+
+        \vspace{10cm}
+
+        \begin{flushright}
+            \textbf{Виконав:}\\Студент 4-го курсу\\групи ФІ-21\\Климентьєв Максим\\
+            \textbf{Перевірив:}\\\text{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}
+        \end{flushright}
+
+        \end{center}
+    \end{titlepage}
+    \newpage
+
+    \pagenumbering{gobble}
+    \tableofcontents
+    \cleardoublepage
+    \pagenumbering{arabic}
+    \setcounter{page}{3}
+
+    \newpage
+    \section{Код реалізації}
+    \lstinputlisting[language=Python, title=BaseUpdate.py]{../Updates/BaseUpdate.py}
+    \lstinputlisting[language=Python, title=Utilities.py]{../Updates/Utilities.py}
+    \lstinputlisting[language=Python, title=LostUpdate.py]{../Updates/LostUpdate.py}
+    \lstinputlisting[language=Python, title=SerializableUpdate.py]{../Updates/SerializableUpdate.py}
+    \lstinputlisting[language=Python, title=InplaceUpdate.py]{../Updates/InplaceUpdate.py}
+    \lstinputlisting[language=Python, title=RowLevelLocking.py]{../Updates/RowLevelLocking.py}
+    \lstinputlisting[language=Python, title=OptimisticConcurrency.py]{../Updates/OptimisticConcurrency.py}
+    \lstinputlisting[language=Dockerfile, title=Dockerfile]{../Dockerfile}
+    \lstinputlisting[style=yaml, title=docker-compose.yml]{../docker-compose.yml}
+
+    \newpage
+    \section{Результати}
+Результат:
+\end{document}
