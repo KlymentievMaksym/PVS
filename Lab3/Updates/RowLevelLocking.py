@@ -12,5 +12,4 @@ class RowLevelLocking(BaseUpdate):
             v += 1
             cursor.execute("UPDATE user_counter SET counter = %s WHERE user_id = %s", (v, self.user_id))
             connection.commit()
-            #     raise
         connection.close()
