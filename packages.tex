@@ -98,6 +98,32 @@
     commentstyle=\color{loginfo},
 }
 
+\definecolor{logresults}{RGB}{255,0,255}
+\definecolor{running}{RGB}{0,205,255}
+\definecolor{received}{RGB}{255,0,100}
+\definecolor{expected}{RGB}{255,0,0}
+\definecolor{elapsed}{RGB}{0,0,255}
+\lstdefinestyle{log}{
+    backgroundcolor=\color{logbg},
+    basicstyle=\ttfamily\scriptsize\color{logtext},
+    breaklines=true,
+    keepspaces=true,
+    showstringspaces=false,
+    numbers=none,
+    frame=single,
+    rulecolor=\color{black},
+    xleftmargin=5pt,
+    xrightmargin=5pt,
+    tabsize=2,
+    literate=
+        {[INFO]}{{\textcolor{loginfo}{[INFO]}}}{6}
+        {Running}{{\textcolor{running}{Running}}}{7}
+        {Received}{{\textcolor{received}{Received}}}{8}
+        {Elapsed}{{\textcolor{elapsed}{Elapsed}}}{7}
+        {expected}{{\textcolor{expected}{expected}}}{8}
+        {[RESULTS]}{{\textcolor{logresults}{[RESULTS]}}}{9}
+}
+
 \lstset{style=mystyle}
 
 

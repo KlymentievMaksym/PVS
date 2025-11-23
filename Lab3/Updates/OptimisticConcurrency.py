@@ -10,11 +10,7 @@ class OptimisticConcurrency(BaseUpdate):
             while True:  # while (True) {
                 cursor.execute("SELECT counter, version FROM user_counter WHERE user_id = %s", (self.user_id,))  # (counter, version) = cursor.execute(“SELECT counter, version FROM user_counter WHERE user_id = 1”).fetchone()
                 results = cursor.fetchone()
-                # if not results:
-                #     cursor.execute("INSERT INTO user_counter(user_id, counter, version) VALUES (%s, %s, %s)", (self.user_id, 1, 1))
-                #     connection.commit()
-                #     break
-                counter, old_version = results #if results else (0, 0)
+                counter, old_version = results
                 counter += 1
                 new_version = old_version + 1
                 cursor.execute("UPDATE user_counter SET counter = %s, version = %s WHERE user_id = %s AND version = %s", (counter, new_version, self.user_id, old_version))

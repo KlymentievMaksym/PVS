@@ -1,0 +1,221 @@
+########################################
+# JAVA=/usr/bin/java
+# JAVA_OPTS=--add-modules java.se --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED -Dlog4j.shutdownHookEnabled=false -Dhazelcast.logging.shutdown=true -Dhazelcast.logging.type=log4j2 -Dlog4j.configurationFile=file:/opt/hazelcast/config/log4j2.properties -Dhazelcast.config=/opt/hazelcast/hazelcast.yaml -Djet.custom.lib.dir=/opt/hazelcast/custom-lib -Djava.net.preferIPv4Stack=true -XX:MaxRAMPercentage=80.0
+# CLASSPATH=/opt/hazelcast/*:/opt/hazelcast/lib:/opt/hazelcast/lib/*:/opt/hazelcast/bin/user-lib:/opt/hazelcast/bin/user-lib/*
+########################################
+2025-11-22 15:15:58,553 [ INFO] [main] [c.h.i.c.AbstractConfigLocator]: Loading configuration '/opt/hazelcast/hazelcast.yaml' from System property 'hazelcast.config'
+2025-11-22 15:15:58,556 [ INFO] [main] [c.h.i.c.AbstractConfigLocator]: Using configuration file at /opt/hazelcast/hazelcast.yaml
+2025-11-22 15:15:59,496 [ WARN] [main] [c.h.i.AddressPicker]: [LOCAL] [dev] [5.4.0] You configured your member address as host name. Please be aware of that your dns can be spoofed. Make sure that your dns configurations are correct.
+2025-11-22 15:15:59,497 [ INFO] [main] [c.h.i.AddressPicker]: [LOCAL] [dev] [5.4.0] Resolving domain name 'hazelcast3' to address(es): [172.18.0.4]
+2025-11-22 15:15:59,498 [ WARN] [main] [c.h.i.AddressPicker]: [LOCAL] [dev] [5.4.0] You configured your member address as host name. Please be aware of that your dns can be spoofed. Make sure that your dns configurations are correct.
+2025-11-22 15:15:59,499 [ INFO] [main] [c.h.i.AddressPicker]: [LOCAL] [dev] [5.4.0] Resolving domain name 'hazelcast2' to address(es): [172.18.0.3]
+2025-11-22 15:15:59,500 [ WARN] [main] [c.h.i.AddressPicker]: [LOCAL] [dev] [5.4.0] You configured your member address as host name. Please be aware of that your dns can be spoofed. Make sure that your dns configurations are correct.
+2025-11-22 15:15:59,500 [ INFO] [main] [c.h.i.AddressPicker]: [LOCAL] [dev] [5.4.0] Resolving domain name 'hazelcast1' to address(es): [172.18.0.2]
+2025-11-22 15:15:59,501 [ INFO] [main] [c.h.i.AddressPicker]: [LOCAL] [dev] [5.4.0] Interfaces is disabled, trying to pick one address from TCP-IP config addresses: [hazelcast3/172.18.0.4, hazelcast2/172.18.0.3, hazelcast1/172.18.0.2]
+2025-11-22 15:15:59,563 [ INFO] [main] [c.h.s.logo]: [hazelcast1]:5701 [dev] [5.4.0] 
+	o    o     o     o---o   o--o o      o---o     o     o----o o--o--o
+	|    |    / \       /         |     /         / \    |         |   
+	o----o       o     o   o----o |    o             o   o----o    |   
+	|    |  *     \   /           |     \       *     \       |    |   
+	o    o *       o o---o   o--o o----o o---o *       o o----o    o   
+2025-11-22 15:15:59,563 [ INFO] [main] [c.h.system]: [hazelcast1]:5701 [dev] [5.4.0] Copyright (c) 2008-2024, Hazelcast, Inc. All Rights Reserved.
+2025-11-22 15:15:59,568 [ INFO] [main] [c.h.system]: [hazelcast1]:5701 [dev] [5.4.0] Hazelcast Platform 5.4.0 (20240415) starting at [hazelcast1]:5701
+2025-11-22 15:15:59,568 [ INFO] [main] [c.h.system]: [hazelcast1]:5701 [dev] [5.4.0] Cluster name: dev
+2025-11-22 15:15:59,569 [ INFO] [main] [c.h.system]: [hazelcast1]:5701 [dev] [5.4.0] Integrity Checker is disabled. Fail-fast on corrupted executables will not be performed. For more information, see the documentation for Integrity Checker.
+2025-11-22 15:15:59,571 [ INFO] [main] [c.h.system]: [hazelcast1]:5701 [dev] [5.4.0] The Jet engine is disabled.
+To enable the Jet engine on the members, do one of the following:
+  - Change member config using Java API: config.getJetConfig().setEnabled(true)
+  - Change XML/YAML configuration property: Set hazelcast.jet.enabled to true
+  - Add system property: -Dhz.jet.enabled=true (for Hazelcast embedded, works only when loading config via Config.load)
+  - Add environment variable: HZ_JET_ENABLED=true (recommended when running container image. For Hazelcast embedded, works only when loading config via Config.load)
+2025-11-22 15:16:00,577 [ INFO] [main] [c.h.s.security]: [hazelcast1]:5701 [dev] [5.4.0] Enable DEBUG/FINE log level for log category com.hazelcast.system.security  or use -Dhazelcast.security.recommendations system property to see ≡ƒöÆ security recommendations and the status of current config.
+2025-11-22 15:16:00,695 [ INFO] [main] [c.h.i.i.Node]: [hazelcast1]:5701 [dev] [5.4.0] Using TCP/IP discovery
+2025-11-22 15:16:00,698 [ INFO] [main] [c.h.c.CPSubsystem]: [hazelcast1]:5701 [dev] [5.4.0] CP Subsystem is enabled with 3 members.
+2025-11-22 15:16:00,996 [ INFO] [main] [c.h.i.d.Diagnostics]: [hazelcast1]:5701 [dev] [5.4.0] Diagnostics disabled. To enable add -Dhazelcast.diagnostics.enabled=true to the JVM arguments.
+2025-11-22 15:16:01,006 [ INFO] [main] [c.h.c.LifecycleService]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast1]:5701 is STARTING
+2025-11-22 15:16:01,051 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.i.c.i.TcpIpJoiner]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast3]:5702 is added to the blacklist.
+2025-11-22 15:16:01,053 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.i.c.i.TcpIpJoiner]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast2]:5702 is added to the blacklist.
+2025-11-22 15:16:01,053 [ INFO] [hz.fervent_brown.cached.thread-4] [c.h.i.c.i.TcpIpJoiner]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast3]:5703 is added to the blacklist.
+2025-11-22 15:16:01,054 [ INFO] [hz.fervent_brown.cached.thread-5] [c.h.i.c.i.TcpIpJoiner]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast2]:5703 is added to the blacklist.
+2025-11-22 15:16:01,055 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.i.c.i.TcpIpJoiner]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast1]:5702 is added to the blacklist.
+2025-11-22 15:16:01,055 [ INFO] [hz.fervent_brown.cached.thread-6] [c.h.i.c.i.TcpIpJoiner]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast1]:5703 is added to the blacklist.
+2025-11-22 15:16:01,075 [ INFO] [hz.fervent_brown.IO.thread-in-0] [c.h.i.s.t.TcpServerConnection]: [hazelcast1]:5701 [dev] [5.4.0] Initialized new cluster connection between /172.18.0.2:53723 and hazelcast2/172.18.0.3:5701
+2025-11-22 15:16:01,088 [ INFO] [hz.fervent_brown.IO.thread-in-1] [c.h.i.s.t.TcpServerConnection]: [hazelcast1]:5701 [dev] [5.4.0] Initialized new cluster connection between /172.18.0.2:5701 and /172.18.0.4:49055
+2025-11-22 15:16:01,090 [ INFO] [hz.fervent_brown.IO.thread-in-1] [c.h.i.s.t.TcpServerConnection]: [hazelcast1]:5701 [dev] [5.4.0] Initialized new cluster connection between /172.18.0.2:59433 and hazelcast3/172.18.0.4:5701
+2025-11-22 15:16:01,109 [ INFO] [hz.fervent_brown.IO.thread-in-0] [c.h.i.s.t.TcpServerConnection]: [hazelcast1]:5701 [dev] [5.4.0] Initialized new cluster connection between /172.18.0.2:5701 and /172.18.0.3:44381
+2025-11-22 15:16:06,067 [ INFO] [main] [c.h.i.c.ClusterService]: [hazelcast1]:5701 [dev] [5.4.0] 
+
+Members {size:1, ver:1} [
+	Member [hazelcast1]:5701 - 32344188-d3ed-4efd-a15a-5237ace5c754 this
+]
+
+2025-11-22 15:16:06,085 [ INFO] [main] [c.h.c.LifecycleService]: [hazelcast1]:5701 [dev] [5.4.0] [hazelcast1]:5701 is STARTED
+2025-11-22 15:16:06,097 [ INFO] [hz.fervent_brown.priority-generic-operation.thread-0] [c.h.i.c.ClusterService]: [hazelcast1]:5701 [dev] [5.4.0] 
+
+Members {size:2, ver:2} [
+	Member [hazelcast1]:5701 - 32344188-d3ed-4efd-a15a-5237ace5c754 this
+	Member [hazelcast3]:5701 - c69b03ec-86d5-4f1b-bcf8-cbcefa29946e
+]
+
+2025-11-22 15:16:06,112 [ INFO] [hz.fervent_brown.priority-generic-operation.thread-0] [c.h.i.c.ClusterService]: [hazelcast1]:5701 [dev] [5.4.0] 
+
+Members {size:3, ver:3} [
+	Member [hazelcast1]:5701 - 32344188-d3ed-4efd-a15a-5237ace5c754 this
+	Member [hazelcast3]:5701 - c69b03ec-86d5-4f1b-bcf8-cbcefa29946e
+	Member [hazelcast2]:5701 - c287e3ce-0ba4-41c1-be6d-4657cb36f62e
+]
+
+2025-11-22 15:16:06,127 [ INFO] [hz.fervent_brown.priority-generic-operation.thread-0] [c.h.c.i.p.t.AuthenticationMessageTask]: [hazelcast1]:5701 [dev] [5.4.0] Received auth from Connection[id=1, /172.18.0.2:5701->/172.18.0.5:56210, qualifier=null, endpoint=[172.18.0.5]:56210, remoteUuid=ee4861ba-4dc1-4e64-89bb-affff916135d, alive=true, connectionType=PYH, planeIndex=-1], successfully authenticated, clientUuid: ee4861ba-4dc1-4e64-89bb-affff916135d, client name: hz.client_0, client version: 5.5.0
+2025-11-22 15:16:06,235 [ INFO] [hz.fervent_brown.generic-operation.thread-3] [c.h.i.p.i.PartitionStateManager]: [hazelcast1]:5701 [dev] [5.4.0] Initializing cluster partition table arrangement...
+2025-11-22 15:16:06,991 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftInvocationManager]: [hazelcast1]:5701 [dev] [5.4.0] Replaced CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=-1}, members=[]} with CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=0}, members=[CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]}
+2025-11-22 15:16:07,010 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftService]: [hazelcast1]:5701 [dev] [5.4.0] RaftNode[CPGroupId{name='METADATA', seed=0, groupId=0}] is created with [RaftEndpoint{uuid='c287e3ce-0ba4-41c1-be6d-4657cb36f62e'}, RaftEndpoint{uuid='c69b03ec-86d5-4f1b-bcf8-cbcefa29946e'}, RaftEndpoint{uuid='32344188-d3ed-4efd-a15a-5237ace5c754'}]
+2025-11-22 15:16:07,011 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.RaftNode(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] Status is set to: ACTIVE
+2025-11-22 15:16:09,522 [ WARN] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.RaftNodeImpl$LeaderFailureDetectionTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] We are FOLLOWER and there is no current leader. Will start new election round...
+2025-11-22 15:16:09,527 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.t.PreVoteTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] Pre-vote started for next term: 1, last log index: 0, last log term: 0
+2025-11-22 15:16:09,527 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.RaftNode(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] 
+
+CP Group Members {groupId: METADATA(0), size:3, term:0, logIndex:0} [
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} - FOLLOWER this
+]
+
+2025-11-22 15:16:09,539 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.h.PreVoteResponseHandlerTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] Pre-vote granted from RaftEndpoint{uuid='c287e3ce-0ba4-41c1-be6d-4657cb36f62e'} for term: 1, number of votes: 2, majority: 2
+2025-11-22 15:16:09,539 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.h.PreVoteResponseHandlerTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] We have the majority during pre-vote phase. Let's start real election!
+2025-11-22 15:16:09,540 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.t.LeaderElectionTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] Leader election started for term: 1, last log index: 0, last log term: 0
+2025-11-22 15:16:09,541 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.RaftNode(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] 
+
+CP Group Members {groupId: METADATA(0), size:3, term:1, logIndex:0} [
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} - CANDIDATE this
+]
+
+2025-11-22 15:16:09,545 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.h.PreVoteResponseHandlerTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] Ignored PreVoteResponse{voter=RaftEndpoint{uuid='c69b03ec-86d5-4f1b-bcf8-cbcefa29946e'}, term=1, granted=true}. We are not FOLLOWER anymore.
+2025-11-22 15:16:09,548 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.h.VoteResponseHandlerTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] Vote granted from RaftEndpoint{uuid='c69b03ec-86d5-4f1b-bcf8-cbcefa29946e'} for term: 1, number of votes: 2, majority: 2
+2025-11-22 15:16:09,548 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.h.VoteResponseHandlerTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] We are the LEADER!
+2025-11-22 15:16:09,550 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.RaftNode(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] 
+
+CP Group Members {groupId: METADATA(0), size:3, term:1, logIndex:0} [
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} - LEADER this
+]
+
+2025-11-22 15:16:09,552 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.r.i.h.VoteResponseHandlerTask(METADATA)]: [hazelcast1]:5701 [dev] [5.4.0] Ignored VoteResponse{voter=RaftEndpoint{uuid='c287e3ce-0ba4-41c1-be6d-4657cb36f62e'}, term=1, granted=true}. We are not CANDIDATE anymore.
+2025-11-22 15:16:09,708 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.RaftInvocationManager]: [hazelcast1]:5701 [dev] [5.4.0] Replaced CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=0}, members=[CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]} with CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=2}, members=[CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]}
+2025-11-22 15:16:09,712 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.RaftInvocationManager]: [hazelcast1]:5701 [dev] [5.4.0] Replaced CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=2}, members=[CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]} with CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=3}, members=[CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]}
+2025-11-22 15:16:09,721 [ INFO] [hz.fervent_brown.partition-operation.thread-0] [c.h.c.i.RaftInvocationManager]: [hazelcast1]:5701 [dev] [5.4.0] Replaced CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=3}, members=[CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]} with CPMembersContainer{version=CPMembersVersion{groupIdSeed=0, version=4}, members=[CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]}
+2025-11-22 15:16:09,722 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.MetadataRaftGroupManager]: [hazelcast1]:5701 [dev] [5.4.0] CP Subsystem is initialized with: [CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}, CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701}, CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}]
+2025-11-22 15:17:09,732 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:17:09,738 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:17:09,739 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} with 1 leaderships.
+2025-11-22 15:17:09,739 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}. Skipping to next...
+2025-11-22 15:17:09,741 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:17:09,741 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] CPGroup leadership balance is fine, cannot rebalance further...
+2025-11-22 15:18:09,728 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:18:09,730 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:18:09,730 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} with 1 leaderships.
+2025-11-22 15:18:09,730 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}. Skipping to next...
+2025-11-22 15:18:09,731 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:18:09,731 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] CPGroup leadership balance is fine, cannot rebalance further...
+2025-11-22 15:19:09,725 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:19:09,727 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:19:09,728 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} with 1 leaderships.
+2025-11-22 15:19:09,728 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}. Skipping to next...
+2025-11-22 15:19:09,729 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:19:09,729 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] CPGroup leadership balance is fine, cannot rebalance further...
+2025-11-22 15:20:09,723 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:20:09,724 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:20:09,724 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} with 1 leaderships.
+2025-11-22 15:20:09,724 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}. Skipping to next...
+2025-11-22 15:20:09,725 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:20:09,725 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] CPGroup leadership balance is fine, cannot rebalance further...
+2025-11-22 15:21:09,721 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:21:09,723 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:21:09,723 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} with 1 leaderships.
+2025-11-22 15:21:09,723 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}. Skipping to next...
+2025-11-22 15:21:09,724 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:21:09,725 [ INFO] [hz.fervent_brown.cached.thread-2] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] CPGroup leadership balance is fine, cannot rebalance further...
+2025-11-22 15:22:09,718 [ INFO] [hz.fervent_brown.cached.thread-1] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+2025-11-22 15:22:09,720 [ INFO] [hz.fervent_brown.cached.thread-1] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 0, leaderships.
+..........................................
+2025-11-22 17:07:09,461 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} with 1 leaderships.
+2025-11-22 17:07:09,461 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}. Skipping to next...
+2025-11-22 17:07:09,462 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 1, leaderships.
+2025-11-22 17:07:09,462 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] CPGroup leadership balance is fine, cannot rebalance further...
+2025-11-22 17:08:09,456 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 1, leaderships.
+2025-11-22 17:08:09,458 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 1, leaderships.
+2025-11-22 17:08:09,458 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} with 1 leaderships.
+2025-11-22 17:08:09,458 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701}. Skipping to next...
+2025-11-22 17:08:09,459 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 1, leaderships.
+2025-11-22 17:08:09,459 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Searching a candidate transfer leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} with 1 leaderships.
+2025-11-22 17:08:09,459 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] No candidate could be found to get leadership from CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701}. Skipping to next...
+2025-11-22 17:08:09,459 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] Current leadership claims:
+	CPMember{uuid=c69b03ec-86d5-4f1b-bcf8-cbcefa29946e, address=[hazelcast3]:5701} priority 0 has 0,
+	CPMember{uuid=32344188-d3ed-4efd-a15a-5237ace5c754, address=[hazelcast1]:5701} priority 0 has 1,
+	CPMember{uuid=c287e3ce-0ba4-41c1-be6d-4657cb36f62e, address=[hazelcast2]:5701} priority 0 has 1, leaderships.
+2025-11-22 17:08:09,459 [ INFO] [hz.fervent_brown.cached.thread-3] [c.h.c.i.RaftGroupMembershipManager]: [hazelcast1]:5701 [dev] [5.4.0] CPGroup leadership balance is fine, cannot rebalance further...

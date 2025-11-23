@@ -36,6 +36,7 @@
 
     \newpage
     \section{Код реалізації}
+    \lstinputlisting[language=Python, title=PostgreUpdates.py]{../PostgreUpdates.py}
     \lstinputlisting[language=Python, title=BaseUpdate.py]{../Updates/BaseUpdate.py}
     \lstinputlisting[language=Python, title=Utilities.py]{../Updates/Utilities.py}
     \lstinputlisting[language=Python, title=LostUpdate.py]{../Updates/LostUpdate.py}
@@ -48,5 +49,28 @@
 
     \newpage
     \section{Результати}
-Результат:
+% Результат:
+    \begin{lstlisting}[style=log]
+[INFO] Running: Lost-update
+[RESULTS] Received: 10001 (10.00% from expected 100000)
+[RESULTS] Elapsed: 141.15 sec
+------------------------------------------------------------
+[INFO] Running: Serializable update
+[RESULTS] Received: 100000 (100.00% from expected 100000)
+[RESULTS] Elapsed: 241.51 sec
+------------------------------------------------------------
+[INFO] Running: In-place update
+[RESULTS] Received: 100000 (100.00% from expected 100000)
+[RESULTS] Elapsed: 224.35 sec
+------------------------------------------------------------
+[INFO] Running: Row-level locking
+[RESULTS] Received: 100000 (100.00% from expected 100000)
+[RESULTS] Elapsed: 239.39 sec
+------------------------------------------------------------
+[INFO] Running: Optimistic concurrency control
+[RESULTS] Received: 100000 (100.00% from expected 100000)
+[RESULTS] Elapsed: 1544.97 sec
+------------------------------------------------------------
+\end{lstlisting}
+
 \end{document}

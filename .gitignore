@@ -12,3 +12,5 @@
 *.toc
 *.xdv
 *.minted
+
+!*logs_.log
