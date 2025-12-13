@@ -3,7 +3,8 @@ import subprocess
 from multiprocessing import Process, Pool
 from pymongo import MongoClient, WriteConcern
 
-URI = "mongodb://mongo1:27017,mongo2:27018,mongo3:27019/?replicaSet=replicaset"
+URI = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=replicaset"
+URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replicaset"
 DB = "testdb"
 COL = "likes"
 DOC_ID = "post1"
