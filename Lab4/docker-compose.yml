@@ -1,0 +1,51 @@
+services:
+  mongo1:
+    image: mongo:8.2
+    hostname: mongo1
+    container_name: mongo1
+    command: ["mongod", "--replSet", "replicaset", "--bind_ip", "localhost,mongo1"]
+    ports:
+    - 27017:27017
+
+
+
+  mongo2:
+    image: mongo:8.2
+    hostname: mongo2
+    container_name: mongo2
+    command: ["mongod", "--replSet", "replicaset", "--bind_ip", "localhost,mongo2"]
+    ports:
+    - 27018:27017
+
+
+
+  mongo3:
+    image: mongo:8.2
+    hostname: mongo3
+    container_name: mongo3
+    command: ["mongod", "--replSet", "replicaset", "--bind_ip", "localhost,mongo3"]
+    ports:
+    - 27019:27017
+
+
+  mongosetup:
+    image: mongo:8.2
+    container_name: mongosetup
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    volumes:
+      - ./scripts:/scripts
+      # - ./hosts:/etc/hosts
+    restart: "no"
+    entrypoint: [ "bash", "/scripts/mongo_setup.sh"]
+
+
+  # python-client:
+  #   build: .
+  #   container_name: python-client
+  #   depends_on:
+  #     - mongosetup
+  #   environment:
+  #     PYTHONUNBUFFERED: 1
