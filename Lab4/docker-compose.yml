@@ -3,7 +3,7 @@ services:
     image: mongo:8.2
     hostname: mongo1
     container_name: mongo1
-    command: ["mongod", "--replSet", "replicaset", "--bind_ip", "localhost,mongo1"]
+    command: ["mongod", "--replSet", "replicaset", "--bind_ip_all"]
     ports:
     - 27017:27017
 
@@ -11,7 +11,7 @@ services:
     image: mongo:8.2
     hostname: mongo2
     container_name: mongo2
-    command: ["mongod", "--replSet", "replicaset", "--bind_ip", "localhost,mongo2"]
+    command: ["mongod", "--replSet", "replicaset", "--bind_ip_all"]
     ports:
     - 27018:27017
 
@@ -19,7 +19,7 @@ services:
     image: mongo:8.2
     hostname: mongo3
     container_name: mongo3
-    command: ["mongod", "--replSet", "replicaset", "--bind_ip", "localhost,mongo3"]
+    command: ["mongod", "--replSet", "replicaset", "--bind_ip_all"]
     ports:
     - 27019:27017
 
