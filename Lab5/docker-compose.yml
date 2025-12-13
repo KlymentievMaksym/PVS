@@ -1,0 +1,91 @@
+# services:
+#   cassandra1:
+#     image: cassandra:5.0.6
+#     container_name: cassandra1
+#     hostname: cassandra1
+#     networks: [cassandra-net]
+#     ports:
+#       - "9042:9042"
+#     environment:
+#       CASSANDRA_CLUSTER_NAME: "TestCluster"
+#       CASSANDRA_SEEDS: "cassandra1"
+#       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+
+#   cassandra2:
+#     image: cassandra:5.0.6
+#     container_name: cassandra2
+#     hostname: cassandra2
+#     networks: [cassandra-net]
+#     environment:
+#       CASSANDRA_CLUSTER_NAME: "TestCluster"
+#       CASSANDRA_SEEDS: "cassandra1"
+#       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+#     depends_on: [cassandra1]
+
+#   cassandra3:
+#     image: cassandra:5.0.6
+#     container_name: cassandra3
+#     hostname: cassandra3
+#     networks: [cassandra-net]
+#     environment:
+#       CASSANDRA_CLUSTER_NAME: "TestCluster"
+#       CASSANDRA_SEEDS: "cassandra1"
+#       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+#     depends_on: [cassandra1]
+
+# networks:
+#   cassandra-net:
+
+services:
+  cas1:
+    image: cassandra:4.1
+    container_name: cas1
+    environment:
+      - CASSANDRA_CLUSTER_NAME=LabCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      # cas1 сам для себе seed (точка входу)
+      - CASSANDRA_SEEDS=cas1
+    ports:
+      - "9042:9042"
+    networks:
+      - cassandra-net
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  cas2:
+    image: cassandra:4.1
+    container_name: cas2
+    environment:
+      - CASSANDRA_CLUSTER_NAME=LabCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      # cas2 стукається до cas1, щоб увійти в кластер
+      - CASSANDRA_SEEDS=cas1
+    depends_on:
+      cas1:
+        condition: service_healthy
+    networks:
+      - cassandra-net
+
+  cas3:
+    image: cassandra:4.1
+    container_name: cas3
+    environment:
+      - CASSANDRA_CLUSTER_NAME=LabCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      # cas3 теж стукається до cas1
+      - CASSANDRA_SEEDS=cas1
+    depends_on:
+      cas1:
+        condition: service_healthy
+    networks:
+      - cassandra-net
+
+networks:
+  cassandra-net:
+    driver: bridge
