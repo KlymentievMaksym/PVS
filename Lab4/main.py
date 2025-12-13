@@ -4,10 +4,22 @@ from multiprocessing import Process, Pool
 from pymongo import MongoClient, WriteConcern
 
 URI = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=replicaset"
+URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replicaset"
 DB = "testdb"
 COL = "likes"
 DOC_ID = "post1"
 
+
+def prepare_db():
+    client = MongoClient(URI)
+
+    print(client.primary)
+    print(client.nodes)
+
+    col = client[DB][COL]
+    col.delete_many({})
+    col.insert_one({"_id": DOC_ID, "likes": 0})
+    client.close()
 
 def worker(write_concern, iterations):
     client = MongoClient(URI)
@@ -21,12 +33,7 @@ def sh(cmd):
     subprocess.run(cmd, shell=True, check=False, capture_output=True)
 
 def run_test(write_concern, kill_primary=False, clients=10, iterations=10):
-    client = MongoClient(URI)
-    col = client[DB][COL]
-    col.delete_many({})
-    col.insert_one({"_id": DOC_ID, "likes": 0})
-    client.close()
-
+    prepare_db()
     print(f"[TEST] writeConcern = {write_concern.document}")
 
     procs = []
@@ -41,21 +48,23 @@ def run_test(write_concern, kill_primary=False, clients=10, iterations=10):
         p.start()
         procs.append(p)
 
-    print(client.primary)
     if kill_primary:
         time.sleep(2)
-        primary = client.primary[0]
-        print(f"[KILL] Stopping PRIMARY ({primary})")
-        sh(f"docker stop {primary}")
-        while client.primary is None:
-            print(f"[WAIT] Waiting for new primary...")
-            time.sleep(1)
-        # time.sleep(6)
-        sh(f"docker start {primary}")
+        # client = MongoClient(URI)
+        # primary = client.primary[0]
+        # print(f"[KILL] Stopping PRIMARY ({primary})")
+        # sh(f"docker stop {primary}")
+        # sh(f"docker stop mongo1")
+        # while client.primary is None:
+        #     print(f"[WAIT] Waiting for new primary...")
+        #     time.sleep(1)
+        # sh(f"docker start mongo1")
+        # sh(f"docker start {primary}")
+        # client.close()
+        # print(client.primary)
 
     for p in procs:
         p.join()
-    print(client.primary)
 
     elapsed = time.time() - start
 
@@ -67,8 +76,9 @@ def run_test(write_concern, kill_primary=False, clients=10, iterations=10):
 
 
 if __name__ == "__main__":
-    # run_test(WriteConcern(w=1))
-    # run_test(WriteConcern(w="majority"))
+    iterations = 10_00
+    run_test(WriteConcern(w=1), iterations=10_00)
+    run_test(WriteConcern(w="majority"), iterations=10_00)
 
     run_test(WriteConcern(w=1), kill_primary=True, iterations=10_00)
     run_test(WriteConcern(w="majority"), kill_primary=True, iterations=10_00)
