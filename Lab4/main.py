@@ -3,23 +3,29 @@ import subprocess
 from multiprocessing import Process, Pool
 from pymongo import MongoClient, WriteConcern
 
-URI = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=replicaset"
+URI = "mongodb://mongo1:27017,mongo2:27018,mongo3:27019/?replicaSet=replicaset"
 DB = "testdb"
 COL = "likes"
 DOC_ID = "post1"
 
 
 def prepare_db():
-    with MongoClient(URI) as client:
-        col = client[DB][COL]
-        col.delete_many({})
-        col.insert_one({"_id": DOC_ID, "likes": 0})
+    client = MongoClient(URI)
+
+    print(client.primary)
+    print(client.nodes)
+
+    col = client[DB][COL]
+    col.delete_many({})
+    col.insert_one({"_id": DOC_ID, "likes": 0})
+    client.close()
 
 def worker(write_concern, iterations):
-    with MongoClient(URI) as client:
-        col = client[DB].get_collection(COL, write_concern=write_concern)
-        for _ in range(iterations):
-            col.find_one_and_update({"_id": DOC_ID}, {"$inc": {"likes": 1}})
+    client = MongoClient(URI)
+    col = client[DB].get_collection(COL, write_concern=write_concern)
+    for _ in range(iterations):
+        col.find_one_and_update({"_id": DOC_ID}, {"$inc": {"likes": 1}})
+    client.close()
 
 def sh(cmd):
     print(cmd)
@@ -41,21 +47,23 @@ def run_test(write_concern, kill_primary=False, clients=10, iterations=10):
         p.start()
         procs.append(p)
 
-    print(client.primary)
     if kill_primary:
         time.sleep(2)
-        primary = client.primary[0]
-        print(f"[KILL] Stopping PRIMARY ({primary})")
-        sh(f"docker stop {primary}")
-        while client.primary is None:
-            print(f"[WAIT] Waiting for new primary...")
-            time.sleep(1)
-        # time.sleep(6)
-        sh(f"docker start {primary}")
+        # client = MongoClient(URI)
+        # primary = client.primary[0]
+        # print(f"[KILL] Stopping PRIMARY ({primary})")
+        # sh(f"docker stop {primary}")
+        # sh(f"docker stop mongo1")
+        # while client.primary is None:
+        #     print(f"[WAIT] Waiting for new primary...")
+        #     time.sleep(1)
+        # sh(f"docker start mongo1")
+        # sh(f"docker start {primary}")
+        # client.close()
+        # print(client.primary)
 
     for p in procs:
         p.join()
-    print(client.primary)
 
     elapsed = time.time() - start
 
@@ -67,8 +75,9 @@ def run_test(write_concern, kill_primary=False, clients=10, iterations=10):
 
 
 if __name__ == "__main__":
-    # run_test(WriteConcern(w=1))
-    # run_test(WriteConcern(w="majority"))
+    iterations = 10_00
+    run_test(WriteConcern(w=1), iterations=10_00)
+    run_test(WriteConcern(w="majority"), iterations=10_00)
 
     run_test(WriteConcern(w=1), kill_primary=True, iterations=10_00)
     run_test(WriteConcern(w="majority"), kill_primary=True, iterations=10_00)
