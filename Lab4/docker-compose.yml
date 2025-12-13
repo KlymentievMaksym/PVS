@@ -7,8 +7,6 @@ services:
     ports:
     - 27017:27017
 
-
-
   mongo2:
     image: mongo:8.2
     hostname: mongo2
@@ -17,8 +15,6 @@ services:
     ports:
     - 27018:27017
 
-
-
   mongo3:
     image: mongo:8.2
     hostname: mongo3
@@ -26,7 +22,6 @@ services:
     command: ["mongod", "--replSet", "replicaset", "--bind_ip", "localhost,mongo3"]
     ports:
     - 27019:27017
-
 
   mongosetup:
     image: mongo:8.2
@@ -37,10 +32,8 @@ services:
       - mongo3
     volumes:
       - ./scripts:/scripts
-      # - ./hosts:/etc/hosts
     restart: "no"
     entrypoint: [ "bash", "/scripts/mongo_setup.sh"]
-
 
   # python-client:
   #   build: .
