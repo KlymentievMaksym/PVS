@@ -9,24 +9,24 @@ COL = "likes"
 DOC_ID = "post1"
 
 
+def prepare_db():
+    with MongoClient(URI) as client:
+        col = client[DB][COL]
+        col.delete_many({})
+        col.insert_one({"_id": DOC_ID, "likes": 0})
+
 def worker(write_concern, iterations):
-    client = MongoClient(URI)
-    col = client[DB].get_collection(COL, write_concern=write_concern)
-    for _ in range(iterations):
-        col.find_one_and_update({"_id": DOC_ID}, {"$inc": {"likes": 1}})
-    client.close()
+    with MongoClient(URI) as client:
+        col = client[DB].get_collection(COL, write_concern=write_concern)
+        for _ in range(iterations):
+            col.find_one_and_update({"_id": DOC_ID}, {"$inc": {"likes": 1}})
 
 def sh(cmd):
     print(cmd)
     subprocess.run(cmd, shell=True, check=False, capture_output=True)
 
 def run_test(write_concern, kill_primary=False, clients=10, iterations=10):
-    client = MongoClient(URI)
-    col = client[DB][COL]
-    col.delete_many({})
-    col.insert_one({"_id": DOC_ID, "likes": 0})
-    client.close()
-
+    prepare_db()
     print(f"[TEST] writeConcern = {write_concern.document}")
 
     procs = []
