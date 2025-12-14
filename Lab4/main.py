@@ -49,23 +49,23 @@ def receive_result():
 if __name__ == "__main__":
     preprocess_db(True)
 
-    # processes = []
-    # for i in range(clients):
-    #     process = Process(target=client_work, args=(iterations, w1))
-    #     process.start()
-    #     processes.append(process)
+    processes = []
+    for i in range(clients):
+        process = Process(target=client_work, args=(iterations, w1))
+        process.start()
+        processes.append(process)
 
-    # time.sleep(1)
-    # sh("docker stop mongo1")
-    # for i in range(5):
-    #     print(receive_result())
-    #     time.sleep(1)
-    # sh("docker start mongo1")
+    time.sleep(1)
+    sh("docker stop mongo1")
+    for i in range(5):
+        print(receive_result())
+        time.sleep(1)
+    sh("docker start mongo1")
 
-    # for process in processes:
-    #     process.join()
+    for process in processes:
+        process.join()
 
-    # receive_result()
+    receive_result()
 
 
 # URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replicaset"
