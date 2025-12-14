@@ -2,6 +2,7 @@ import time
 import subprocess
 from multiprocessing import Process, Pool
 from pymongo import MongoClient, WriteConcern
+from pymongo.errors import AutoReconnect, ConnectionFailure, WTimeoutError, ServerSelectionTimeoutError, NetworkTimeout
 
 URI = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=replicaset"
 # URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replicaset"
@@ -14,37 +15,57 @@ clients = 10
 iterations = 10
 
 def sh(command: str):
+    print(command)
     subprocess.run(command, shell=True)
 
 def preprocess_db(info: bool = False):
-    with MongoClient(URI, serverMonitoringMode="poll") as client:
-        print(f"[WAIT] Waiting for primary...")
-        client.admin.command("ping")
-        print(f" "*30, end="\r", flush=True)
-        database = client["testdb"]
+    with MongoClient(URI) as client:
+        try:
+            client.admin.command("ping")
+            database = client["testdb"]
+            if database.get_collection("likes") is not None:
+                database.drop_collection("likes")
+            database.create_collection("likes")
 
-        if database.get_collection("likes") is not None:
-            database.drop_collection("likes")
-        database.create_collection("likes")
+            collection = database.get_collection("likes")
+            collection.insert_one({"_id": "1", "likes": 0})
 
-        collection = database.get_collection("likes")
-        collection.insert_one({"_id": name_id, "likes": 0})
+            if info:
+                print(collection)
+                print(client.primary)
+                print(client.nodes)
+        except WTimeoutError:
+            print("[TIMEOUT] WTimeoutError")
+        except ServerSelectionTimeoutError:
+            print("[TIMEOUT] ServerSelectionTimeoutError")
+            time.sleep(1)
+            preprocess_db(info)
 
-        if info:
-            print(client.primary)
-            print(client.nodes)
-            receive_result()
+def client_work(write_concern, timeout, read_concern=None):
+    with MongoClient(URI, timeoutMS=timeout) as client:
+        try:
+            collection = client["testdb"].get_collection("likes", write_concern=write_concern, read_concern=read_concern)
+            collection.find_one_and_update({"_id": "1"}, {"$inc": {"likes": 1}})
+        except WTimeoutError:
+            print("[TIMEOUT] WTimeoutError")
+        except ServerSelectionTimeoutError:
+            print("[TIMEOUT] ServerSelectionTimeoutError")
+            time.sleep(1)
+            client_work(write_concern, timeout, read_concern)
+        except NetworkTimeout:
+            print("[TIMEOUT] NetworkTimeout")
 
-def client_work(iterations, write_concern):
-    with MongoClient(URI, serverMonitoringMode="poll") as client:
-        collection = client["testdb"].get_collection("likes", write_concern=write_concern)
-        for _ in range(iterations):
-            collection.find_one_and_update({"_id": name_id}, {"$inc": {"likes": 1}})
-
-def receive_result():
-    with MongoClient(URI, serverMonitoringMode="poll") as client:
-        collection = client["testdb"]["likes"]
-        print(collection.find_one({"_id": name_id}))
+def receive_result(read_concern=None):
+    with MongoClient(URI) as client:
+        try:
+            collection = client["testdb"].get_collection("likes", read_concern=read_concern)
+            print(collection.find_one({"_id": "1"}))
+        except WTimeoutError:
+            print("[TIMEOUT] WTimeoutError")
+        except ServerSelectionTimeoutError:
+            print("[TIMEOUT] ServerSelectionTimeoutError")
+            time.sleep(1)
+            receive_result(read_concern)
 
 if __name__ == "__main__":
     preprocess_db(True)
