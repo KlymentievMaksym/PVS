@@ -37,6 +37,7 @@
     \newpage
     \section{Код реалізації}
     \lstinputlisting[language=python]{../task_1.py}
+    \lstinputlisting[language=python]{../task_2.py}
 
     \newpage
     \section{Результати}
@@ -394,19 +395,75 @@ replicaset [direct: primary] test> rs.status()
     \begin{enumerate}
         \item Вказавши у парметрах findOneAndUpdate writeConcern = 1
             \begin{lstlisting}[language=python]
-
+[INFO] Started task with writeConcern = {'w': 1} and kill_primary = False
+[KILL] [START RESULT]
+{'_id': '1', 'likes': 0}
+[KILL] [END RESULT]
+{'_id': '1', 'likes': 100000}
+[RESULTS] Time: 28.11 sec
             \end{lstlisting}
         \item Вказавши у парметрах findOneAndUpdate writeConcern = majority
             \begin{lstlisting}[language=python]
-
+[INFO] Started task with writeConcern = {'w': 'majority'} and kill_primary = False
+[KILL] [START RESULT]
+{'_id': '1', 'likes': 0}
+[KILL] [END RESULT]
+{'_id': '1', 'likes': 100000}
+[RESULTS] Time: 79.26 sec
             \end{lstlisting}
         \item Повторно запустить код при writeConcern = 1, але тепер під час роботи відключіть Primary ноду і подивитись що буде обрана інша Primary нода, яка продовжить обробку запитів, і чи кінцевий результат буде коректним
             \begin{lstlisting}[language=python]
-
+[INFO] Started task with writeConcern = {'w': 1} and kill_primary = True
+[KILL] [START RESULT]
+{'_id': '1', 'likes': 0}
+docker stop mongo1
+mongo1
+[KILL] [MID RESULT] After 4 seconds from stoping PRIMARY...
+[TIMEOUT] client_work ServerSelectionTimeoutError
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work NotPrimaryError...
+[TIMEOUT] receive_result ServerSelectionTimeoutError
+docker start mongo1
+mongo1
+[KILL] [MID RESULT] After enabling OLD PRIMARY...
+{'_id': '1', 'likes': 15091}
+[KILL] [END RESULT]
+{'_id': '1', 'likes': 15091}
+[RESULTS] Time: 51.42 sec
             \end{lstlisting}
         \item Повторно запустить код при writeConcern = majority, але тепер під час роботи відключіть Primary ноду і подивитись що буде обрана інша Primary нода, яка продовжить обробку запитів, і чи кінцевий результат буде коректним
             \begin{lstlisting}[language=python]
-
+[INFO] Started task with writeConcern = {'w': 'majority'} and kill_primary = True
+[KILL] [START RESULT]
+{'_id': '1', 'likes': 0}
+docker stop mongo1
+mongo1
+[KILL] [MID RESULT] After 4 seconds from stoping PRIMARY...
+[ERROR] client_work WriteConcernError
+[ERROR] client_work WriteConcernError
+[ERROR] client_work WriteConcernError
+[ERROR] client_work WriteConcernError
+[ERROR] client_work WriteConcernError
+[ERROR] client_work WriteConcernError
+[ERROR] client_work NotPrimaryError...
+[ERROR] client_work WriteConcernError
+[ERROR] client_work WriteConcernError
+[ERROR] client_work WriteConcernError
+[TIMEOUT] receive_result ServerSelectionTimeoutError
+docker start mongo1
+mongo1
+[KILL] [MID RESULT] After enabling OLD PRIMARY...
+{'_id': '1', 'likes': 4875}
+[KILL] [END RESULT]
+{'_id': '1', 'likes': 4875}
+[RESULTS] Time: 51.55 sec
             \end{lstlisting}
     \end{enumerate}
 
