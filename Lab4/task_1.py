@@ -4,7 +4,7 @@ from multiprocessing import Process, Pool
 from pymongo import MongoClient, WriteConcern
 
 URI = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=replicaset"
-URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replicaset"
+# URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replicaset"
 
 w1 = WriteConcern(w=1)
 wm = WriteConcern(w="majority")
@@ -17,7 +17,7 @@ def sh(command: str):
     subprocess.run(command, shell=True)
 
 def preprocess_db(info: bool = False):
-    with MongoClient(URI) as client:
+    with MongoClient(URI, serverMonitoringMode="poll") as client:
         print(f"[WAIT] Waiting for primary...")
         client.admin.command("ping")
         print(f" "*30, end="\r", flush=True)
@@ -36,13 +36,13 @@ def preprocess_db(info: bool = False):
             receive_result()
 
 def client_work(iterations, write_concern):
-    with MongoClient(URI) as client:
+    with MongoClient(URI, serverMonitoringMode="poll") as client:
         collection = client["testdb"].get_collection("likes", write_concern=write_concern)
         for _ in range(iterations):
             collection.find_one_and_update({"_id": name_id}, {"$inc": {"likes": 1}})
 
 def receive_result():
-    with MongoClient(URI) as client:
+    with MongoClient(URI, serverMonitoringMode="poll") as client:
         collection = client["testdb"]["likes"]
         print(collection.find_one({"_id": name_id}))
 
@@ -57,9 +57,11 @@ if __name__ == "__main__":
 
     time.sleep(1)
     sh("docker stop mongo1")
-    for i in range(5):
-        print(receive_result())
-        time.sleep(1)
+    with MongoClient(URI, serverMonitoringMode="poll") as client:
+        for i in range(5):
+            print(client.primary)
+            # print(receive_result())
+            time.sleep(1)
     sh("docker start mongo1")
 
     for process in processes:
