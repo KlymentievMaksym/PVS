@@ -34,11 +34,3 @@ services:
       - ./scripts:/scripts
     restart: "no"
     entrypoint: [ "bash", "/scripts/mongo_setup.sh"]
-
-  # python-client:
-  #   build: .
-  #   container_name: python-client
-  #   depends_on:
-  #     - mongosetup
-  #   environment:
-  #     PYTHONUNBUFFERED: 1

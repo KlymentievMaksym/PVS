@@ -1,0 +1,216 @@
+\documentclass{article}
+
+\input{../../packages.tex}
+
+\graphicspath{ {../Images/} }
+
+\begin{document}
+    \begin{titlepage}
+        \begin{center}
+
+        Міністерство освіти і науки України
+        
+        НТУУ «Київський політехнічний інститут»
+        
+        Фізико-технічний інститут
+        \vspace{3.3cm}
+        
+        {\textbf{Проектування високонавантажених систем}\\Лабораторна робота No4\\Налаштування реплікації та перевірка відмовостійкості MongoDB}
+
+        \vspace{10cm}
+
+        \begin{flushright}
+            \textbf{Виконав:}\\Студент 4-го курсу\\групи ФІ-21\\Климентьєв Максим\\
+            \textbf{Перевірив:}\\\text{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}
+        \end{flushright}
+
+        \end{center}
+    \end{titlepage}
+    \newpage
+
+    \pagenumbering{gobble}
+    \tableofcontents
+    \cleardoublepage
+    \pagenumbering{arabic}
+    \setcounter{page}{3}
+
+    \newpage
+    \section{Код реалізації}
+
+    \newpage
+    \section{Результати}
+
+    I Налаштування реплікації
+    \begin{enumerate}
+        \item Налаштувати реплікацію в конфігурації: Primary with Two Secondary Members (P-S-S) (всі ноди можуть бути запущені як окремі процеси або у Docker контейнерах)
+            \begin{lstlisting}[language=python]
+replicaset [direct: primary] test> rs.status()
+{
+    set: 'replicaset',
+    date: ISODate('2025-12-14T14:45:33.199Z'),
+    myState: 1,
+    term: Long('1'),
+    syncSourceHost: '',
+    syncSourceId: -1,
+    heartbeatIntervalMillis: Long('2000'),
+    majorityVoteCount: 2,
+    writeMajorityCount: 2,
+    votingMembersCount: 3,
+    writableVotingMembersCount: 3,
+    optimes: {
+        lastCommittedOpTime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        lastCommittedWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        readConcernMajorityOpTime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        appliedOpTime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        durableOpTime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        writtenOpTime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        lastAppliedWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastDurableWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T14:45:31.010Z')
+    },
+    lastStableRecoveryTimestamp: Timestamp({ t: 1765723511, i: 1 }),
+    electionCandidateMetrics: {
+        lastElectionReason: 'electionTimeout',
+        lastElectionDate: ISODate('2025-12-14T14:35:30.954Z'),
+        electionTerm: Long('1'),
+        lastCommittedOpTimeAtElection: { ts: Timestamp({ t: 1765722919, i: 1 }), t: Long('-1') },
+        lastSeenWrittenOpTimeAtElection: { ts: Timestamp({ t: 1765722919, i: 1 }), t: Long('-1') },
+        lastSeenOpTimeAtElection: { ts: Timestamp({ t: 1765722919, i: 1 }), t: Long('-1') },
+        numVotesNeeded: 2,
+        priorityAtElection: 2,
+        electionTimeoutMillis: Long('10000'),
+        numCatchUpOps: Long('0'),
+        newTermStartDate: ISODate('2025-12-14T14:35:31.003Z'),
+        wMajorityWriteAvailabilityDate: ISODate('2025-12-14T14:35:31.473Z')
+    },
+    members: [
+        {
+        _id: 0,
+        name: 'mongo1:27017',
+        health: 1,
+        state: 1,
+        stateStr: 'PRIMARY',
+        uptime: 620,
+        optime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeDate: ISODate('2025-12-14T14:45:31.000Z'),
+        optimeWritten: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeWrittenDate: ISODate('2025-12-14T14:45:31.000Z'),
+        lastAppliedWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastDurableWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        syncSourceHost: '',
+        syncSourceId: -1,
+        infoMessage: '',
+        electionTime: Timestamp({ t: 1765722930, i: 1 }),
+        electionDate: ISODate('2025-12-14T14:35:30.000Z'),
+        configVersion: 1,
+        configTerm: 1,
+        self: true,
+        lastHeartbeatMessage: ''
+        },
+        {
+        _id: 1,
+        name: 'mongo2:27017',
+        health: 1,
+        state: 2,
+        stateStr: 'SECONDARY',
+        uptime: 613,
+        optime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeDurable: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeWritten: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeDate: ISODate('2025-12-14T14:45:31.000Z'),
+        optimeDurableDate: ISODate('2025-12-14T14:45:31.000Z'),
+        optimeWrittenDate: ISODate('2025-12-14T14:45:31.000Z'),
+        lastAppliedWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastDurableWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastHeartbeat: ISODate('2025-12-14T14:45:32.968Z'),
+        lastHeartbeatRecv: ISODate('2025-12-14T14:45:31.970Z'),
+        pingMs: Long('0'),
+        lastHeartbeatMessage: '',
+        syncSourceHost: 'mongo1:27017',
+        syncSourceId: 0,
+        infoMessage: '',
+        configVersion: 1,
+        configTerm: 1
+        },
+        {
+        _id: 2,
+        name: 'mongo3:27017',
+        health: 1,
+        state: 2,
+        stateStr: 'SECONDARY',
+        uptime: 613,
+        optime: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeDurable: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeWritten: { ts: Timestamp({ t: 1765723531, i: 1 }), t: Long('1') },
+        optimeDate: ISODate('2025-12-14T14:45:31.000Z'),
+        optimeDurableDate: ISODate('2025-12-14T14:45:31.000Z'),
+        optimeWrittenDate: ISODate('2025-12-14T14:45:31.000Z'),
+        lastAppliedWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastDurableWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T14:45:31.010Z'),
+        lastHeartbeat: ISODate('2025-12-14T14:45:32.969Z'),
+        lastHeartbeatRecv: ISODate('2025-12-14T14:45:31.970Z'),
+        pingMs: Long('0'),
+        lastHeartbeatMessage: '',
+        syncSourceHost: 'mongo1:27017',
+        syncSourceId: 0,
+        infoMessage: '',
+        configVersion: 1,
+        configTerm: 1
+        }
+    ],
+    ok: 1,
+    '$clusterTime': {
+        clusterTime: Timestamp({ t: 1765723531, i: 1 }),
+        signature: {
+        hash: Binary.createFromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAA=', 0),
+        keyId: Long('0')
+        }
+    },
+    operationTime: Timestamp({ t: 1765723531, i: 1 })
+    }
+            \end{lstlisting}
+        \item Спробувати зробити запис з однією відключеною нодою та write concern рівнім 3 та нескінченім таймаутом. Спробувати під час таймаута включити відключену ноду
+            \begin{lstlisting}
+
+            \end{lstlisting}
+        \item Аналогічно попередньому пункту, але задати скінченний таймаут та дочекатись його закінчення. Перевірити чи данні записались і чи доступні на читання з рівнем readConcern: “majority”
+            \begin{lstlisting}
+
+            \end{lstlisting}
+        \item Продемонстрував перевибори primary node відключивши поточний primary
+            \begin{lstlisting}
+
+            \end{lstlisting}
+        \item і що після відновлення роботи старої primary на неї реплікуються нові дані, які з'явилися під час її простою
+            \begin{lstlisting}
+
+            \end{lstlisting}
+    \end{enumerate}
+
+    II Аналіз продуктивності та перевірка цілісності
+
+    Cтворити колекцію \(таблицю\) з каунтером лайків. Далі з 10 окремих клієнтів одночасно запустити інкерементацію каунтеру лайків по 10000 на кожного клієнта з різними опціями взаємодії з MongoDB.
+
+    \begin{enumerate}
+        \item Вказавши у парметрах findOneAndUpdate writeConcern = 1
+            \begin{lstlisting}
+
+            \end{lstlisting}
+        \item Вказавши у парметрах findOneAndUpdate writeConcern = majority
+            \begin{lstlisting}
+
+            \end{lstlisting}
+        \item Повторно запустить код при writeConcern = 1, але тепер під час роботи відключіть Primary ноду і подивитись що буде обрана інша Primary нода, яка продовжить обробку запитів, і чи кінцевий результат буде коректним
+            \begin{lstlisting}
+
+            \end{lstlisting}
+        \item Повторно запустить код при writeConcern = majority, але тепер під час роботи відключіть Primary ноду і подивитись що буде обрана інша Primary нода, яка продовжить обробку запитів, і чи кінцевий результат буде коректним
+            \begin{lstlisting}
+
+            \end{lstlisting}
+    \end{enumerate}
+
+\end{document}

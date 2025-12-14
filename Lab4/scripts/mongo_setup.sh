@@ -35,7 +35,6 @@ until mongosh --host mongo1:27017 --quiet --eval "rs.isMaster().ismaster" | grep
   sleep 1
 done
 
-# Додатково чекаємо, щоб всі SECONDARY синхронізувалися
 echo "[INFO] Waiting for all nodes to be SECONDARY/PRIMARY..."
 until [ $(mongosh --host mongo1:27017 --quiet --eval "rs.status().members.filter(m => m.stateStr === 'PRIMARY' || m.stateStr === 'SECONDARY').length") -eq 3 ]; do
   sleep 1
