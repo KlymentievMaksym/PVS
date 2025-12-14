@@ -3,7 +3,7 @@ import subprocess
 from multiprocessing import Process, Pool
 from pymongo import MongoClient, WriteConcern
 from pymongo.read_concern import ReadConcern
-from pymongo.errors import AutoReconnect, ConnectionFailure, WTimeoutError, ServerSelectionTimeoutError
+from pymongo.errors import AutoReconnect, ConnectionFailure, WTimeoutError, ServerSelectionTimeoutError, NetworkTimeout
 
 # URI = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=replicaset"
 URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replicaset"
@@ -34,6 +34,8 @@ def preprocess_db(info: bool = False):
             print("[TIMEOUT] WTimeoutError")
         except ServerSelectionTimeoutError:
             print("[TIMEOUT] ServerSelectionTimeoutError")
+            time.sleep(1)
+            preprocess_db(info)
 
 def client_work(write_concern, timeout, read_concern=None):
     with MongoClient(URI, timeoutMS=timeout) as client:
@@ -44,6 +46,10 @@ def client_work(write_concern, timeout, read_concern=None):
             print("[TIMEOUT] WTimeoutError")
         except ServerSelectionTimeoutError:
             print("[TIMEOUT] ServerSelectionTimeoutError")
+            time.sleep(1)
+            client_work(write_concern, timeout, read_concern)
+        except NetworkTimeout:
+            print("[TIMEOUT] NetworkTimeout")
 
 def receive_result(read_concern=None):
     with MongoClient(URI) as client:
@@ -54,6 +60,8 @@ def receive_result(read_concern=None):
             print("[TIMEOUT] WTimeoutError")
         except ServerSelectionTimeoutError:
             print("[TIMEOUT] ServerSelectionTimeoutError")
+            time.sleep(1)
+            receive_result(read_concern)
 
 def get_topology_status():
     with MongoClient(URI) as client:
@@ -72,6 +80,8 @@ def get_topology_status():
 
 def task(welcome_text, node_to_stop, node_type, timeout=None, read_concern=None):
     print(f"[INFO] [{node_type}] {welcome_text}")
+    print(f"[INFO] [START RESULT] Right before stoping {node_type}...")
+    receive_result(read_concern)
     processes = []
     sh(f"docker stop {node_to_stop}")
     for i in range(1):
@@ -99,6 +109,6 @@ if __name__ == "__main__":
     task(text, "mongo1", "PRIMARY")
     task(text, "mongo3", "SECONDARY")
     text = "Starting 1 client with w=3 write concern and 'majority' read concern, but timeout = 3000..."
-    # task(text, "mongo1", "PRIMARY")
+    task(text, "mongo1", "PRIMARY")
     task(text, "mongo3", "SECONDARY", read_concern=ReadConcern("majority"), timeout=3000)
 
