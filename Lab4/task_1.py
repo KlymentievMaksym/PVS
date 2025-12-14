@@ -3,6 +3,7 @@ import subprocess
 from multiprocessing import Process, Pool
 from pymongo import MongoClient, WriteConcern
 from pymongo.read_concern import ReadConcern
+from pymongo.read_preferences import ReadPreference
 from pymongo.errors import AutoReconnect, ConnectionFailure, WTimeoutError, ServerSelectionTimeoutError, NetworkTimeout
 
 # URI = "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=replicaset"
@@ -31,11 +32,9 @@ def preprocess_db(info: bool = False):
                 print(client.nodes)
                 print(get_topology_status())
         except WTimeoutError:
-            print("[TIMEOUT] WTimeoutError")
+            print(f"[TIMEOUT] {preprocess_db.__name__} WTimeoutError")
         except ServerSelectionTimeoutError:
-            print("[TIMEOUT] ServerSelectionTimeoutError")
-            time.sleep(1)
-            preprocess_db(info)
+            print(f"[TIMEOUT] {preprocess_db.__name__} ServerSelectionTimeoutError")
 
 def client_work(write_concern, timeout, read_concern=None):
     with MongoClient(URI, timeoutMS=timeout) as client:
@@ -43,13 +42,11 @@ def client_work(write_concern, timeout, read_concern=None):
             collection = client["testdb"].get_collection("likes", write_concern=write_concern, read_concern=read_concern)
             collection.find_one_and_update({"_id": "1"}, {"$inc": {"likes": 1}})
         except WTimeoutError:
-            print("[TIMEOUT] WTimeoutError")
+            print(f"[TIMEOUT] {client_work.__name__} WTimeoutError")
         except ServerSelectionTimeoutError:
-            print("[TIMEOUT] ServerSelectionTimeoutError")
-            time.sleep(1)
-            client_work(write_concern, timeout, read_concern)
+            print(f"[TIMEOUT] {client_work.__name__} ServerSelectionTimeoutError")
         except NetworkTimeout:
-            print("[TIMEOUT] NetworkTimeout")
+            print(f"[TIMEOUT] {client_work.__name__} NetworkTimeout")
 
 def receive_result(read_concern=None):
     with MongoClient(URI) as client:
@@ -57,26 +54,24 @@ def receive_result(read_concern=None):
             collection = client["testdb"].get_collection("likes", read_concern=read_concern)
             print(collection.find_one({"_id": "1"}))
         except WTimeoutError:
-            print("[TIMEOUT] WTimeoutError")
+            print(f"[TIMEOUT] {receive_result.__name__} WTimeoutError")
         except ServerSelectionTimeoutError:
-            print("[TIMEOUT] ServerSelectionTimeoutError")
-            time.sleep(1)
-            receive_result(read_concern)
+            print(f"[TIMEOUT] {receive_result.__name__} ServerSelectionTimeoutError")
 
 def get_topology_status():
     with MongoClient(URI) as client:
         try:
             while True:
                 try:
-                    status = client.admin.command("hello") # або "isMaster" у старих версіях
+                    status = client.admin.command("hello")
                     return status.get("primary"), status.get("me")
                 except (AutoReconnect, ConnectionFailure):
-                    print("... Вибори нового Primary тривають ...")
+                    print("Primary Election still going")
                     time.sleep(1)
         except WTimeoutError:
-            print("[TIMEOUT] WTimeoutError")
+            print(f"[TIMEOUT] [{get_topology_status.__name__}] WTimeoutError")
         except ServerSelectionTimeoutError:
-            print("[TIMEOUT] ServerSelectionTimeoutError")
+            print(f"[TIMEOUT] [{get_topology_status.__name__}] ServerSelectionTimeoutError")
 
 def task(welcome_text, node_to_stop, node_type, timeout=None, read_concern=None):
     print(f"[INFO] [{node_type}] {welcome_text}")
@@ -104,11 +99,22 @@ def task(welcome_text, node_to_stop, node_type, timeout=None, read_concern=None)
 
 if __name__ == "__main__":
     preprocess_db(True)
-
     text = "Starting 1 client with w=3 write concern and no timeout..."
     task(text, "mongo1", "PRIMARY")
     task(text, "mongo3", "SECONDARY")
+
+    # preprocess_db(True)
     text = "Starting 1 client with w=3 write concern and 'majority' read concern, but timeout = 3000..."
     task(text, "mongo1", "PRIMARY")
     task(text, "mongo3", "SECONDARY", read_concern=ReadConcern("majority"), timeout=3000)
+
+    direct_uri = f"mongodb://localhost:27017/?directConnection=true"
+    print(f"[VERIFY] Checking local data directly on mongo1...")
+    try:
+        with MongoClient(direct_uri) as client:
+            db = client.get_database("testdb", read_preference=ReadPreference.SECONDARY_PREFERRED)
+            doc = db["likes"].find_one({"_id": "1"})
+            print(doc)
+    except Exception as e:
+        print(f"[VERIFY ERROR] Could not read from mongo1: {e}")
 

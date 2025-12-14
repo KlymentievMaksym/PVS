@@ -36,6 +36,7 @@
 
     \newpage
     \section{Код реалізації}
+    \lstinputlisting[language=python]{../task_1.py}
 
     \newpage
     \section{Результати}
@@ -170,20 +171,21 @@ replicaset [direct: primary] test> rs.status()
         }
     },
     operationTime: Timestamp({ t: 1765723531, i: 1 })
-    }
+}
             \end{lstlisting}
+ДАЛІ В МЕНЕ БУЛИ ПРОБЛЕМИ, ЯКІ Я ВЗАГАЛІ НІЯК НЕ МІГ ПОФІКСИТИ, КОЛИ ВБИВАЮ PRIMARY НОДУ ЧОМУСЬ ПАЙТОН НІКОЛИ НЕ БАЧИТЬ, ЩО ВОНИ ВЖЕ ПЕРЕОБРАЛИСЬ
         \item Спробувати зробити запис з однією відключеною нодою та write concern рівнім 3 та нескінченім таймаутом. Спробувати під час таймаута включити відключену ноду
-            \begin{lstlisting}
+            \begin{lstlisting}[language=python]
 [INFO] [PRIMARY] Starting 1 client with w=3 write concern and no timeout...
 [INFO] [START RESULT] Right before stoping PRIMARY...
 {'_id': '1', 'likes': 0}
 docker stop mongo1
 mongo1
 [INFO] [MID RESULT] Right after stoping PRIMARY...
-[TIMEOUT] ServerSelectionTimeoutError
-[TIMEOUT] ServerSelectionTimeoutError
+[TIMEOUT] receive_result ServerSelectionTimeoutError
+[TIMEOUT] client_work ServerSelectionTimeoutError
 [INFO] [MID RESULT] After 10 seconds stoping PRIMARY...
-[TIMEOUT] ServerSelectionTimeoutError
+[TIMEOUT] receive_result ServerSelectionTimeoutError
 docker start mongo1
 mongo1
 [INFO] [FINAL RESULT]
@@ -204,17 +206,17 @@ mongo3
 {'_id': '1', 'likes': 1}
             \end{lstlisting}
         \item Аналогічно попередньому пункту, але задати скінченний таймаут та дочекатись його закінчення. Перевірити чи данні записались і чи доступні на читання з рівнем readConcern: “majority”
-            \begin{lstlisting}
+            \begin{lstlisting}[language=python]
 [INFO] [PRIMARY] Starting 1 client with w=3 write concern and 'majority' read concern, but timeout = 3000...
 [INFO] [START RESULT] Right before stoping PRIMARY...
 {'_id': '1', 'likes': 1}
 docker stop mongo1
 mongo1
 [INFO] [MID RESULT] Right after stoping PRIMARY...
-[TIMEOUT] ServerSelectionTimeoutError
-[TIMEOUT] ServerSelectionTimeoutError
+[TIMEOUT] receive_result ServerSelectionTimeoutError
+[TIMEOUT] client_work ServerSelectionTimeoutError
 [INFO] [MID RESULT] After 10 seconds stoping PRIMARY...
-[TIMEOUT] ServerSelectionTimeoutError
+[TIMEOUT] receive_result ServerSelectionTimeoutError
 docker start mongo1
 mongo1
 [INFO] [FINAL RESULT]
@@ -227,7 +229,7 @@ docker stop mongo3
 mongo3
 [INFO] [MID RESULT] Right after stoping SECONDARY...
 {'_id': '1', 'likes': 1}
-[TIMEOUT] WTimeoutError
+[TIMEOUT] client_work WTimeoutError
 [INFO] [MID RESULT] After 10 seconds stoping SECONDARY...
 {'_id': '1', 'likes': 2}
 docker start mongo3
@@ -236,12 +238,152 @@ mongo3
 {'_id': '1', 'likes': 2}
             \end{lstlisting}
         \item Продемонстрував перевибори primary node відключивши поточний primary
-            \begin{lstlisting}
-
+            \begin{lstlisting}[language=python]
+replicaset [direct: primary] test> rs.status()
+{
+    set: 'replicaset',
+    date: ISODate('2025-12-14T19:13:48.632Z'),
+    myState: 1,
+    term: Long('4'),
+    syncSourceHost: '',
+    syncSourceId: -1,
+    heartbeatIntervalMillis: Long('2000'),
+    majorityVoteCount: 2,
+    writeMajorityCount: 2,
+    votingMembersCount: 3,
+    writableVotingMembersCount: 3,
+    optimes: {
+        lastCommittedOpTime: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        lastCommittedWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        readConcernMajorityOpTime: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        appliedOpTime: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        durableOpTime: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        writtenOpTime: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        lastAppliedWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        lastDurableWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T19:13:39.283Z')
+    },
+    lastStableRecoveryTimestamp: Timestamp({ t: 1765739560, i: 1 }),
+    electionCandidateMetrics: {
+        lastElectionReason: 'electionTimeout',
+        lastElectionDate: ISODate('2025-12-14T19:13:19.273Z'),
+        electionTerm: Long('4'),
+        lastCommittedOpTimeAtElection: { ts: Timestamp({ t: 1765739588, i: 2 }), t: Long('3') },
+        lastSeenWrittenOpTimeAtElection: { ts: Timestamp({ t: 1765739588, i: 2 }), t: Long('3') },
+        lastSeenOpTimeAtElection: { ts: Timestamp({ t: 1765739588, i: 2 }), t: Long('3') },
+        numVotesNeeded: 2,
+        priorityAtElection: 1,
+        electionTimeoutMillis: Long('10000'),
+        priorPrimaryMemberId: 0,
+        numCatchUpOps: Long('0'),
+        newTermStartDate: ISODate('2025-12-14T19:13:29.282Z'),
+        wMajorityWriteAvailabilityDate: ISODate('2025-12-14T19:13:29.383Z')
+    },
+    electionParticipantMetrics: {
+        votedForCandidate: false,
+        electionTerm: Long('4'),
+        lastVoteDate: ISODate('2025-12-14T19:13:19.277Z'),
+        electionCandidateMemberId: 1,
+        voteReason: 'already voted for another candidate (mongo2:27017) this term (4)',
+        lastWrittenOpTimeAtElection: { ts: Timestamp({ t: 1765739588, i: 2 }), t: Long('3') },
+        maxWrittenOpTimeInSet: { ts: Timestamp({ t: 1765739588, i: 2 }), t: Long('3') },
+        lastAppliedOpTimeAtElection: { ts: Timestamp({ t: 1765739588, i: 2 }), t: Long('3') },
+        maxAppliedOpTimeInSet: { ts: Timestamp({ t: 1765739588, i: 2 }), t: Long('3') },
+        priorityAtElection: 1
+    },
+    members: [
+        {
+        _id: 0,
+        name: 'mongo1:27017',
+        health: 0,
+        state: 8,
+        stateStr: '(not reachable/healthy)',
+        uptime: 0,
+        optime: { ts: Timestamp({ t: 0, i: 0 }), t: Long('-1') },
+        optimeDurable: { ts: Timestamp({ t: 0, i: 0 }), t: Long('-1') },
+        optimeWritten: { ts: Timestamp({ t: 0, i: 0 }), t: Long('-1') },
+        optimeDate: ISODate('1970-01-01T00:00:00.000Z'),
+        optimeDurableDate: ISODate('1970-01-01T00:00:00.000Z'),
+        optimeWrittenDate: ISODate('1970-01-01T00:00:00.000Z'),
+        lastAppliedWallTime: ISODate('2025-12-14T19:13:08.755Z'),
+        lastDurableWallTime: ISODate('2025-12-14T19:13:08.755Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T19:13:08.755Z'),
+        lastHeartbeat: ISODate('2025-12-14T19:13:44.290Z'),
+        lastHeartbeatRecv: ISODate('2025-12-14T19:13:08.736Z'),
+        pingMs: Long('0'),
+        lastHeartbeatMessage: 'no response within election timeout period',
+        syncSourceHost: '',
+        syncSourceId: -1,
+        infoMessage: '',
+        configVersion: 1,
+        configTerm: 3
+        },
+        {
+        _id: 1,
+        name: 'mongo2:27017',
+        health: 1,
+        state: 1,
+        stateStr: 'PRIMARY',
+        uptime: 197,
+        optime: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        optimeDate: ISODate('2025-12-14T19:13:39.000Z'),
+        optimeWritten: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        optimeWrittenDate: ISODate('2025-12-14T19:13:39.000Z'),
+        lastAppliedWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        lastDurableWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        syncSourceHost: '',
+        syncSourceId: -1,
+        infoMessage: 'Could not find member to sync from',
+        electionTime: Timestamp({ t: 1765739599, i: 1 }),
+        electionDate: ISODate('2025-12-14T19:13:19.000Z'),
+        configVersion: 1,
+        configTerm: 4,
+        self: true,
+        lastHeartbeatMessage: ''
+        },
+        {
+        _id: 2,
+        name: 'mongo3:27017',
+        health: 1,
+        state: 2,
+        stateStr: 'SECONDARY',
+        uptime: 189,
+        optime: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        optimeDurable: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        optimeWritten: { ts: Timestamp({ t: 1765739619, i: 1 }), t: Long('4') },
+        optimeDate: ISODate('2025-12-14T19:13:39.000Z'),
+        optimeDurableDate: ISODate('2025-12-14T19:13:39.000Z'),
+        optimeWrittenDate: ISODate('2025-12-14T19:13:39.000Z'),
+        lastAppliedWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        lastDurableWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        lastWrittenWallTime: ISODate('2025-12-14T19:13:39.283Z'),
+        lastHeartbeat: ISODate('2025-12-14T19:13:47.285Z'),
+        lastHeartbeatRecv: ISODate('2025-12-14T19:13:47.786Z'),
+        pingMs: Long('0'),
+        lastHeartbeatMessage: '',
+        syncSourceHost: 'mongo2:27017',
+        syncSourceId: 1,
+        infoMessage: '',
+        configVersion: 1,
+        configTerm: 4
+        }
+    ],
+    ok: 1,
+    '$clusterTime': {
+        clusterTime: Timestamp({ t: 1765739619, i: 1 }),
+        signature: {
+        hash: Binary.createFromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAA=', 0),
+        keyId: Long('0')
+        }
+    },
+    operationTime: Timestamp({ t: 1765739619, i: 1 })
+}
             \end{lstlisting}
         \item і що після відновлення роботи старої primary на неї реплікуються нові дані, які з'явилися під час її простою
-            \begin{lstlisting}
-
+            \begin{lstlisting}[language=python]
+[VERIFY] Checking local data directly on mongo1...
+{'_id': '1', 'likes': 2}
             \end{lstlisting}
     \end{enumerate}
 
@@ -251,19 +393,19 @@ mongo3
 
     \begin{enumerate}
         \item Вказавши у парметрах findOneAndUpdate writeConcern = 1
-            \begin{lstlisting}
+            \begin{lstlisting}[language=python]
 
             \end{lstlisting}
         \item Вказавши у парметрах findOneAndUpdate writeConcern = majority
-            \begin{lstlisting}
+            \begin{lstlisting}[language=python]
 
             \end{lstlisting}
         \item Повторно запустить код при writeConcern = 1, але тепер під час роботи відключіть Primary ноду і подивитись що буде обрана інша Primary нода, яка продовжить обробку запитів, і чи кінцевий результат буде коректним
-            \begin{lstlisting}
+            \begin{lstlisting}[language=python]
 
             \end{lstlisting}
         \item Повторно запустить код при writeConcern = majority, але тепер під час роботи відключіть Primary ноду і подивитись що буде обрана інша Primary нода, яка продовжить обробку запитів, і чи кінцевий результат буде коректним
-            \begin{lstlisting}
+            \begin{lstlisting}[language=python]
 
             \end{lstlisting}
     \end{enumerate}
