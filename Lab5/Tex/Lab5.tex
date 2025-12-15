@@ -36,122 +36,265 @@
 
     \newpage
     \section{Код реалізації}
-    % \lstinputlisting[language=python]{../task_1.py}
-    % \lstinputlisting[language=python]{../task_2.py}
-    % \lstinputlisting[language=python]{../task_3.py}
+    % \lstinputlisting[language=sql]{../task_1.py}
+    % \lstinputlisting[language=sql]{../task_2.py}
+    % \lstinputlisting[language=sql]{../task_3.py}
 
     \newpage
     \section{Результати}
         \subsection{Частина 1. Робота зі структурами даних у Cassandra}
             Створіть keyspace з найпростішої стратегією реплікації
-                \begin{lstlisting}[language=python]
-
+                \begin{lstlisting}[language=sql]
+CREATE KEYSPACE shop 
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
                 \end{lstlisting}
             В цьому keyspace необхідно буде створити дві таблиці: items та orders
             Таблиця items містить різноманітні товари (тобто у яких різний набір властивостей).
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
 
             Для набору властивостей товару виберіть базові характеристики однакові для всіх товарів (name, category, price, producer, ...),
             а для властивостей які відрізняються використовуйте тип map (створивши індекс для можливості пошуку по її вмісту)
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
 
             Увага: Необхідно, щоб пошук швидко працював для категорії (category) товарів. Ця вимога має бути врахована при створенні ключа для таблиці (тобто, category має бути partition key).
-                \begin{lstlisting}[language=python]
-
+                \begin{lstlisting}[language=sql]
+CREATE TABLE items (
+    id uuid,
+    name text,
+    producer text,
+    category text,
+    price decimal,
+    features map<text, text>,
+    PRIMARY KEY ((category), price, id)
+);
+CREATE INDEX items_features_index ON items(ENTRIES(features));
                 \end{lstlisting}
 
             Наповніть таблиці тестовими данними
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
+            \begin{figure}[ht]
+                \includegraphics[width=1\linewidth]{task_1_test_data.png}
+            \end{figure}
 
             !!! У запитах заборонено використовувати ALLOW FILTERING !!!
             \begin{enumerate}
                 \item Напишіть запит, який показує структуру створеної таблиці (команда DESCRIBE)
-                    \begin{lstlisting}[language=python]
+                    \begin{lstlisting}[language=sql]
+DESCRIBE TABLE items;
+                    \end{lstlisting}
+                    \begin{lstlisting}[language=sql]
+CREATE TABLE shop.items (
+    category text,
+    price decimal,
+    id uuid,
+    name text,
+    producer text,
+    features map<text, text>,
+    PRIMARY KEY (category, price, id)
+) WITH CLUSTERING ORDER BY (price ASC, id ASC)
+    AND additional_write_policy = '99p'
+    AND allow_auto_snapshot = true
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND cdc = false
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND memtable = 'default'
+    AND crc_check_chance = 1.0
+    AND default_time_to_live = 0
+    AND extensions = {}
+    AND gc_grace_seconds = 864000
+    AND incremental_backups = true
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99p';
 
+CREATE INDEX items_features_index ON shop.items (entries(features));
+
+CREATE INDEX items_name_index ON shop.items (name);
+
+CREATE MATERIALIZED VIEW shop.items_by_producer AS
+    SELECT category, producer, price, id, features, name
+    FROM shop.items
+    WHERE category IS NOT NULL AND producer IS NOT NULL AND price IS NOT NULL AND id IS NOT NULL
+    PRIMARY KEY (category, producer, price, id)
+ WITH CLUSTERING ORDER BY (producer ASC, price ASC, id ASC)
+    AND additional_write_policy = '99p'
+    AND allow_auto_snapshot = true
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND cdc = false
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND memtable = 'default'
+    AND crc_check_chance = 1.0
+    AND extensions = {}
+    AND gc_grace_seconds = 864000
+    AND incremental_backups = true
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99p';
                     \end{lstlisting}
                 \item Напишіть запит, який виводить усі товари в певній категорії відсортовані за ціною
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[language=sql]
+select * from items where category = 'Настільні ігри';
                     \end{lstlisting}
+                    \begin{figure}[ht]
+                        \centering
+                        \includegraphics[width=1\linewidth]{task_1_select_category.png}
+                    \end{figure}\newpage
                 \item Напишіть запити, які вибирають товари за різними критеріями в межах певної категорії (тут де треба замість індексу використайте Matirialized view):
                     \begin{itemize}
                         \item назва,
                         \item ціна (в проміжку),
                         \item ціна та виробник
                     \end{itemize}
-                    \begin{lstlisting}[language=python]
+                    \begin{lstlisting}[language=sql]
+CREATE INDEX items_name_index ON items(name);
 
+CREATE MATERIALIZED VIEW items_by_producer AS
+SELECT category, producer, price, id, name, features
+FROM items
+WHERE category IS NOT NULL AND producer IS NOT NULL AND price IS NOT NULL AND id IS NOT NULL
+PRIMARY KEY ((category), producer, price, id);
+
+SELECT * FROM items WHERE name = 'UNO Cards';
+SELECT * FROM items WHERE category = 'Настільні ігри' AND price >= 500 AND price <= 1000;
+SELECT * FROM items_by_producer WHERE category = 'Настільні ігри' AND producer = 'Hasbro' AND price >= 500 AND price <= 3000;
                     \end{lstlisting}
-            \end{enumerate}
+                    \begin{figure}[ht]
+                        \includegraphics[width=1\linewidth]{task_1_select_name.png}
+                    \end{figure}
+                    \begin{figure}[ht]
+                        \includegraphics[width=1\linewidth]{task_1_select_price.png}
+                    \end{figure}
+                    \begin{figure}[ht]
+                        \includegraphics[width=1\linewidth]{task_1_select_producer_and_price.png}
+                    \end{figure}
+            \end{enumerate}\newpage
 
             Створіть таблицю orders в якій міститься ім'я замовника і інформація про замовлення: перелік id-товарів у замовленні, вартість замовлення, дата замовлення, ....
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
 
             Для кожного замовника повинна бути можливість швидко шукати його замовлення і виконувати по них запити.
             Ця вимога має бути врахована при створенні ключа для таблиці (аналогічно як для items).
-            \begin{lstlisting}[language=python]
+            \begin{lstlisting}[language=sql]
+CREATE TABLE orders (
+    customer_name text,
+    order_time timestamp,
+    order_id uuid,
+    item_ids list<uuid>,
+    total_price decimal,
+    PRIMARY KEY ((customer_name), order_time, order_id)
+) WITH CLUSTERING ORDER BY (order_time DESC);
 
-            \end{lstlisting}
-            
+CREATE INDEX orders_item_ids_index ON orders(item_ids);
+CREATE INDEX orders_total_price_index ON orders(total_price);
+            \end{lstlisting}            
             \begin{enumerate}
                 \item Напишіть запит, який показує структуру створеної таблиці (команда DESCRIBE)
-                    \begin{lstlisting}[language=python]
+                    \begin{lstlisting}[language=sql]
+DESCRIBE TABLE orders;
+                    \end{lstlisting}
+                    \begin{lstlisting}[language=sql]
+CREATE TABLE shop.orders (
+    customer_name text,
+    order_time timestamp,
+    order_id uuid,
+    total_price decimal,
+    item_ids list<uuid>,
+    PRIMARY KEY (customer_name, order_time, order_id)
+) WITH CLUSTERING ORDER BY (order_time DESC, order_id ASC)
+    AND additional_write_policy = '99p'
+    AND allow_auto_snapshot = true
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND cdc = false
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND memtable = 'default'
+    AND crc_check_chance = 1.0
+    AND default_time_to_live = 0
+    AND extensions = {}
+    AND gc_grace_seconds = 864000
+    AND incremental_backups = true
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99p';
 
+CREATE INDEX orders_item_ids_index ON shop.orders (values(item_ids));
+
+CREATE INDEX orders_total_price_index ON shop.orders (total_price);
                     \end{lstlisting}
                 \item Для замовника виведіть всі його замовлення відсортовані за часом коли вони були зроблені
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[language=sql]
+EXPAND ON;
+select * from orders where customer_name = 'Andriy';
+EXPAND OFF;
+select * from orders where customer_name = 'Andriy';
                     \end{lstlisting}
+                    \begin{figure}[ht]
+                        \includegraphics[width=0.5\linewidth]{task_1_select_customer_name_v.png}
+                    \end{figure}
+                    \begin{figure}[ht]
+                        \includegraphics[width=1\linewidth]{task_1_select_customer_name_h.png}
+                    \end{figure}
                 \item Для кожного замовників підрахуйте загальну суму на яку були зроблені усі його замовлення
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[language=sql]
+select customer_name, sum(total_price) as all_price from orders GROUP BY customer_name;
                     \end{lstlisting}
+                    \begin{figure}[ht]
+                        \centering
+                        \includegraphics[width=1\linewidth]{task_1_select_name_total_price.png}
+                    \end{figure}\newpage
                 \item Для кожного замовлення виведіть час коли його ціна були занесена в базу (SELECT WRITETIME)
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[language=sql]
+SELECT customer_name, order_time, order_id, total_price, WRITETIME(total_price) as write_time FROM orders;
                     \end{lstlisting}
+                    \begin{figure}[ht]
+                        \centering
+                        \includegraphics[width=1\linewidth]{task_1_select_order_by_writetime.png}
+                    \end{figure}
             \end{enumerate}
 
-    \subsection{Частина 2. Налаштування реплікації у Cassandra}
+        \newpage
+        \subsection{Частина 2. Налаштування реплікації у Cassandra}
 
         \begin{enumerate}
             \item Сконфігурувати кластер з 3-х нод:
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item Перевірити правильність конфігурації за допомогою nodetool status
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item Викоритовуючи cqlsh, створити три Keyspace з replication factor 1, 2, 3 з SimpleStrategy
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item В кожному з кейспейсів створити прості таблиці
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
         \end{enumerate}
 
         \begin{enumerate}
             \item Спробуйте писати і читати в ці таблиці підключаюсь до різних нод через cqlsh.
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item Вставте дані в створені таблиці і подивіться на їх розподіл по вузлах кластера окремо для кожного з кейспесов (команда nodetool status) - має бути видно відсоток даних який зберігається на ноді
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item Для якогось запису з кожного з кейспейсу виведіть ноди на яких зберігаються дані - має бути видно ip-адреси вузлів на яких зберігається даний рядок
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
         \end{enumerate}
@@ -160,15 +303,15 @@
             \item Відключити одну з нод. Для кожного з кейспейсів перевірити з якими рівнями consistency можемо читати та писати
                 \begin{itemize}
                     \item для Keyspace з replication factor 1 - CONSISTENCY ONE
-                        \begin{lstlisting}[language=python]
+                        \begin{lstlisting}[language=sql]
 
                         \end{lstlisting}
                     \item для Keyspace з replication factor 2 - CONSISTENCY ONE/TWO
-                        \begin{lstlisting}[language=python]
+                        \begin{lstlisting}[language=sql]
 
                         \end{lstlisting}
                     \item для Keyspace з replication factor 3 - CONSISTENCY ONE/TWO/THREE
-                        \begin{lstlisting}[language=python]
+                        \begin{lstlisting}[language=sql]
 
                         \end{lstlisting}
                 \end{itemize}
@@ -176,17 +319,17 @@
 
         \begin{enumerate}
             \item Зробить так щоб три ноди працювали, але не бачили одна одну по мережі (заблокуйте чи відключити зв'язок між ними)
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item Для кейспейсу з replication factor 3 задайте рівень consistency рівним 1.
                 Виконайте по черзі запис значення з однаковим primary key, але різними іншими значенням окремо на кожну з нод (тобто створіть конфлікт)
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item Відновіть зв'язок між нодами, і перевірте що вони знову об'єдналися у кластер.
                 Визначте яким чином була вирішений конфлікт даних та яке значення було прийнято кластером та за яким принципом
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
         \end{enumerate}
@@ -197,7 +340,7 @@
         Далі з 10 окремих клієнтів одночасно запустити інкерементацію каунтеру лайків по 10\_000 на кожного клієнта з різними опціями взаємодії з Cassandra.
 
         Таблиця має бути створена у Keyspace з replication factor 3.
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
 
@@ -207,13 +350,13 @@
             \item Вказавши у параметрах запиту Consistency Level One (це буде означати, що запис відбувається синхронно тільки на одну ноду),
                 запустіть 10 клієнтів з інкрементом по 10\_000 на кожному з них.
                 Виміряйте час виконання та перевірте чи кінцеве значення буде дорівнювати очікуваному - 100К
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
             \item Вказавши у параметрах запиту Consistency Level QUORUM (це буде означати, що запис відбувається синхронно на більшість нод),
                 запустіть 10 клієнтів з інкрементом по 10\_000 на кожному з них.
                 Виміряйте час виконання та перевірте чи кінцеве значення буде дорівнювати очікуваному - 100К
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[language=sql]
 
                 \end{lstlisting}
         \end{enumerate}
