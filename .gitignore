@@ -2,7 +2,7 @@
 */.env/
 *.aux
 *.bbl*
-*.bcf
+*.bcf*
 *.blg
 *.fdb*
 *.fls
