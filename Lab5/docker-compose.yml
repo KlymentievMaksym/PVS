@@ -1,129 +1,78 @@
-# services:
-#   cassandra1:
-#     image: cassandra:5.0.6
-#     container_name: cassandra1
-#     hostname: cassandra1
-#     networks: [cassandra-net]
-#     ports:
-#       - "9042:9042"
-#     environment:
-#       CASSANDRA_CLUSTER_NAME: "TestCluster"
-#       CASSANDRA_SEEDS: "cassandra1"
-#       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-
-#   cassandra2:
-#     image: cassandra:5.0.6
-#     container_name: cassandra2
-#     hostname: cassandra2
-#     networks: [cassandra-net]
-#     environment:
-#       CASSANDRA_CLUSTER_NAME: "TestCluster"
-#       CASSANDRA_SEEDS: "cassandra1"
-#       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-#     depends_on: [cassandra1]
-
-#   cassandra3:
-#     image: cassandra:5.0.6
-#     container_name: cassandra3
-#     hostname: cassandra3
-#     networks: [cassandra-net]
-#     environment:
-#       CASSANDRA_CLUSTER_NAME: "TestCluster"
-#       CASSANDRA_SEEDS: "cassandra1"
-#       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-#     depends_on: [cassandra1]
-
-# networks:
-#   cassandra-net:
-
-# services:
-#   cas1:
-#     image: cassandra:4.1
-#     container_name: cas1
-#     environment:
-#       - CASSANDRA_CLUSTER_NAME=LabCluster
-#       - CASSANDRA_DC=datacenter1
-#       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-#       # cas1 сам для себе seed (точка входу)
-#       - CASSANDRA_SEEDS=cas1
-#     ports:
-#       - "9042:9042"
-#     networks:
-#       - cassandra-net
-#     healthcheck:
-#       test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
-#       interval: 30s
-#       timeout: 10s
-#       retries: 5
-
-#   cas2:
-#     image: cassandra:4.1
-#     container_name: cas2
-#     environment:
-#       - CASSANDRA_CLUSTER_NAME=LabCluster
-#       - CASSANDRA_DC=datacenter1
-#       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-#       # cas2 стукається до cas1, щоб увійти в кластер
-#       - CASSANDRA_SEEDS=cas1
-#     depends_on:
-#       cas1:
-#         condition: service_healthy
-#     networks:
-#       - cassandra-net
-
-#   cas3:
-#     image: cassandra:4.1
-#     container_name: cas3
-#     environment:
-#       - CASSANDRA_CLUSTER_NAME=LabCluster
-#       - CASSANDRA_DC=datacenter1
-#       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-#       # cas3 теж стукається до cas1
-#       - CASSANDRA_SEEDS=cas1
-#     depends_on:
-#       cas1:
-#         condition: service_healthy
-#     networks:
-#       - cassandra-net
-
-# networks:
-#   cassandra-net:
-#     driver: bridge
-
 services:
-  cassandra1:
-    image: cassandra:5.0.6
-    container_name: cassandra1
-    hostname: cassandra1
-    ports:
-      - "9042:9042"
-    environment:
-      - CASSANDRA_CLUSTER_NAME=ShopCluster
-    volumes:
-      - ./scripts:/scripts
-    user: root
-    command: [ "bash", "/scripts/mater-view.sh"]
-    healthcheck:
-      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-    networks:
-      - cassandra-net
-  
-  cassandra-setup:
-    image: cassandra:5.0.6
-    container_name: cassandra-setup
-    depends_on:
-      cassandra1:
-        condition: service_healthy
-    volumes:
-      - ./scripts:/scripts
-    networks:
-      - cassandra-net
-    # restart: unless-stopped
-    entrypoint: ["cqlsh", "cassandra1", "-f",  "/scripts/task.cql"]
+  # cassandra-task1:
+  #   image: cassandra:5.0.6
+  #   container_name: cassandra-task1
+  #   hostname: cassandra-task1
+  #   ports:
+  #     - "9042:9042"
+  #   environment:
+  #     - CASSANDRA_CLUSTER_NAME=ShopCluster
+  #   volumes:
+  #     - ./scripts:/scripts
+  #   user: root
+  #   command: [ "bash", "/scripts/mater-view.sh"]
+  #   healthcheck:
+  #     test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 10
+  #   networks:
+  #     - cassandra-net-task1
 
+  # cassandra-task1-setup:
+  #   image: cassandra:5.0.6
+  #   container_name: cassandra-setup
+  #   depends_on:
+  #     cassandra-task1:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./scripts:/scripts
+  #   networks:
+  #     - cassandra-net-task1
+  #   # restart: unless-stopped
+  #   entrypoint: ["cqlsh", "cassandra-task1", "-f",  "/scripts/task_1.cql"]
+
+  cassandra-node1:
+    image: cassandra:5.0.6
+    container_name: cassandra-node1
+    environment:
+      - CASSANDRA_CLUSTER_NAME=shop_cluster
+      - CASSANDRA_RPC_ADDRESS=cassandra-node1
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    ports:
+      - "9043:9042"
+    networks:
+      - cassandra-net
+
+  cassandra-node2:
+    image: cassandra:5.0.6
+    container_name: cassandra-node2
+    environment:
+      - CASSANDRA_CLUSTER_NAME=shop_cluster
+      - CASSANDRA_RPC_ADDRESS=cassandra-node2
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    networks:
+      - cassandra-net
+
+  cassandra-node3:
+    image: cassandra:5.0.6
+    container_name: cassandra-node3
+    environment:
+      - CASSANDRA_CLUSTER_NAME=shop_cluster
+      - CASSANDRA_RPC_ADDRESS=cassandra-node3
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    networks:
+      - cassandra-net
 
 networks:
   cassandra-net:
+  cassandra-net-task1:
