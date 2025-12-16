@@ -1,3 +1,7 @@
+DROP KEYSPACE IF EXISTS shop_rf1;
+DROP KEYSPACE IF EXISTS shop_rf2;
+DROP KEYSPACE IF EXISTS shop_rf3;
+
 CREATE KEYSPACE shop_rf1 
 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 CREATE TABLE shop_rf1.items (id int PRIMARY KEY, name text);

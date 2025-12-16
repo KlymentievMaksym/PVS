@@ -277,10 +277,10 @@ Datacenter: dc1
 ===============
 Status=Up/Down
 |/ State=Normal/Leaving/Joining/Moving
---  Address     Load       Tokens  Owns (effective)  Host ID                               Rack 
-UN  172.18.0.3  80.09 KiB  16      73.2%             576c84db-5321-41ed-8746-469e0958c744  rack1
-UN  172.18.0.2  194.4 KiB  16      58.0%             3c447738-3297-4c36-af79-bad2228d0479  rack1
-UN  172.18.0.4  85.23 KiB  16      68.8%             c9342fed-5dbf-4d5b-9d43-3d26d3abe248  rack1
+--  Address     Load       Tokens  Owns (effective)  Host ID                               Rack
+UN  172.18.0.3  85.22 KiB   16      72.2%             6eec0752-ea2d-423c-ba6d-83211e6a73c5  rack1
+UN  172.18.0.2  194.38 KiB  16      59.3%             4f7f8a4c-893e-4815-bee1-da6090b8a56c  rack1
+UN  172.18.0.4  80.09 KiB   16      68.5%             34511972-165a-4c27-8448-9f92768af587  rack1
                 \end{lstlisting}
             \item Викоритовуючи cqlsh, створити три Keyspace з replication factor 1, 2, 3 з SimpleStrategy
                 \begin{lstlisting}[language=sql]
@@ -312,35 +312,122 @@ INSERT INTO shop_rf3.items (id, name) VALUES (1, 'Item One');
 SELECT * FROM shop_rf1.items;
 SELECT * FROM shop_rf2.items;
 SELECT * FROM shop_rf3.items;
+
+docker exec -it cassandra-node1 cqlsh cassandra-node1 -f /scripts/task_2.cql
                 \end{lstlisting}
             \item Вставте дані в створені таблиці і подивіться на їх розподіл по вузлах кластера окремо для кожного з кейспесов (команда nodetool status) - має бути видно відсоток даних який зберігається на ноді
+                \begin{lstlisting}[language=sql]
+docker exec -it cassandra-node1 nodetool status shop_rf1
+docker exec -it cassandra-node1 nodetool status shop_rf2
+docker exec -it cassandra-node1 nodetool status shop_rf3
+                \end{lstlisting}
+                \begin{lstlisting}[language=sql]
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load        Tokens  Owns (effective)  Host ID                               Rack
+UN  172.18.0.3  86.01 KiB  16      30.3%             6eec0752-ea2d-423c-ba6d-83211e6a73c5  rack1
+UN  172.18.0.2  80.09 KiB  16      40.3%             4f7f8a4c-893e-4815-bee1-da6090b8a56c  rack1
+UN  172.18.0.4  80.09 KiB  16      29.4%             34511972-165a-4c27-8448-9f92768af587  rack1
+
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load        Tokens  Owns (effective)  Host ID                               Rack
+UN  172.18.0.3  86.01 KiB  16      72.2%             6eec0752-ea2d-423c-ba6d-83211e6a73c5  rack1
+UN  172.18.0.2  80.09 KiB  16      59.3%             4f7f8a4c-893e-4815-bee1-da6090b8a56c  rack1
+UN  172.18.0.4  80.09 KiB  16      68.5%             34511972-165a-4c27-8448-9f92768af587  rack1
+
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load        Tokens  Owns (effective)  Host ID                               Rack 
+UN  172.18.0.3  86.01 KiB  16      100.0%            6eec0752-ea2d-423c-ba6d-83211e6a73c5  rack1
+UN  172.18.0.2  80.09 KiB  16      100.0%            4f7f8a4c-893e-4815-bee1-da6090b8a56c  rack1
+UN  172.18.0.4  80.09 KiB  16      100.0%            34511972-165a-4c27-8448-9f92768af587  rack1
+                \end{lstlisting}
+            \item Для якогось запису з кожного з кейспейсу виведіть ноди на яких зберігаються дані - має бути видно ip-адреси вузлів на яких зберігається даний рядок
                 \begin{lstlisting}[language=sql]
 docker exec -it cassandra-node1 nodetool getendpoints shop_rf1 items 1
 docker exec -it cassandra-node1 nodetool getendpoints shop_rf2 items 1
 docker exec -it cassandra-node1 nodetool getendpoints shop_rf3 items 1
                 \end{lstlisting}
                 \begin{lstlisting}[language=sql]
-                \end{lstlisting}
-            \item Для якогось запису з кожного з кейспейсу виведіть ноди на яких зберігаються дані - має бути видно ip-адреси вузлів на яких зберігається даний рядок
-                \begin{lstlisting}[language=sql]
+172.18.0.2
 
+172.18.0.2
+172.18.0.4
+
+172.18.0.2
+172.18.0.4
+172.18.0.3
                 \end{lstlisting}
-        \end{enumerate}
+            \end{enumerate}
 
         \begin{enumerate}
             \item Відключити одну з нод. Для кожного з кейспейсів перевірити з якими рівнями consistency можемо читати та писати
+                \begin{lstlisting}[language=sql]
+docker stop cassandra-node3
+docker exec -it cassandra-node1 cqlsh
+                \end{lstlisting}
                 \begin{itemize}
                     \item для Keyspace з replication factor 1 - CONSISTENCY ONE
                         \begin{lstlisting}[language=sql]
-
+USE shop_rf1;
+CONSISTENCY ONE;
+INSERT INTO items (id, name) VALUES (100, 'Risky Data');
+                        \end{lstlisting}
+                        \begin{lstlisting}[language=sql]
+NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 127.0.0.1:9042 dc1>: Unavailable('Error from server: code=1000 [Unavailable exception] message="Cannot achieve consistency level ONE" info={\'consistency\': \'ONE\', \'required_replicas\': 1, \'alive_replicas\': 0}')})
                         \end{lstlisting}
                     \item для Keyspace з replication factor 2 - CONSISTENCY ONE/TWO
                         \begin{lstlisting}[language=sql]
+USE shop_rf2;
+CONSISTENCY ONE;
+INSERT INTO items (id, name) VALUES (200, 'Risky Data');
+select * from items;
 
+CONSISTENCY TWO;
+INSERT INTO items (id, name) VALUES (201, 'Risky Data 2');
+                        \end{lstlisting}
+                        \begin{lstlisting}[language=sql]
+ id  | name
+-----+------------
+   1 |   Item One
+ 200 | Risky Data
+
+NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 127.0.0.1:9042 dc1>: Unavailable('Error from server: code=1000 [Unavailable exception] message="Cannot achieve consistency level TWO" info={\'consistency\': \'TWO\', \'required_replicas\': 2, \'alive_replicas\': 1}')})
                         \end{lstlisting}
                     \item для Keyspace з replication factor 3 - CONSISTENCY ONE/TWO/THREE
                         \begin{lstlisting}[language=sql]
+USE shop_rf3;
+CONSISTENCY ONE;
+INSERT INTO items (id, name) VALUES (300, 'Risky Data');
+select * from items;
 
+CONSISTENCY TWO;
+INSERT INTO items (id, name) VALUES (301, 'Risky Data 2');
+select * from items;
+
+CONSISTENCY THREE;
+INSERT INTO items (id, name) VALUES (302, 'Risky Data 2');
+                        \end{lstlisting}
+                        \begin{lstlisting}[language=sql]
+ id  | name
+-----+------------
+   1 |   Item One
+ 300 | Risky Data
+
+ id  | name
+-----+--------------
+   1 |     Item One
+ 300 |   Risky Data
+ 301 | Risky Data 2
+
+NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 127.0.0.1:9042 dc1>: Unavailable('Error from server: code=1000 [Unavailable exception] message="Cannot achieve consistency level THREE" info={\'consistency\': \'THREE\', \'required_replicas\': 3, \'alive_replicas\': 2}')})
                         \end{lstlisting}
                 \end{itemize}
         \end{enumerate}
@@ -348,17 +435,37 @@ docker exec -it cassandra-node1 nodetool getendpoints shop_rf3 items 1
         \begin{enumerate}
             \item Зробить так щоб три ноди працювали, але не бачили одна одну по мережі (заблокуйте чи відключити зв'язок між ними)
                 \begin{lstlisting}[language=sql]
-
+docker start cassandra-node3
+docker network disconnect lab5_cassandra-net cassandra-node1
+docker network disconnect lab5_cassandra-net cassandra-node2
+docker network disconnect lab5_cassandra-net cassandra-node3
                 \end{lstlisting}
             \item Для кейспейсу з replication factor 3 задайте рівень consistency рівним 1.
                 Виконайте по черзі запис значення з однаковим primary key, але різними іншими значенням окремо на кожну з нод (тобто створіть конфлікт)
                 \begin{lstlisting}[language=sql]
-
+docker exec -it cassandra-node1 cqlsh -e "USE shop_rf3; CONSISTENCY ONE; INSERT INTO items (id, name) VALUES (777, 'ISLAND_1');"
+docker exec -it cassandra-node2 cqlsh -e "USE shop_rf3; CONSISTENCY ONE; INSERT INTO items (id, name) VALUES (777, 'ISLAND_2');"
+docker exec -it cassandra-node3 cqlsh -e "USE shop_rf3; CONSISTENCY ONE; INSERT INTO items (id, name) VALUES (777, 'ISLAND_3');"
                 \end{lstlisting}
             \item Відновіть зв'язок між нодами, і перевірте що вони знову об'єдналися у кластер.
                 Визначте яким чином була вирішений конфлікт даних та яке значення було прийнято кластером та за яким принципом
                 \begin{lstlisting}[language=sql]
+docker network connect lab5_cassandra-net cassandra-node1
+docker network connect lab5_cassandra-net cassandra-node2
+docker network connect lab5_cassandra-net cassandra-node3
 
+docker exec -it cassandra-node1 nodetool status
+
+docker restart cassandra-node1 cassandra-node2 cassandra-node3
+
+docker exec -it cassandra-node1 nodetool status
+
+docker exec -it cassandra-node1 cqlsh -e "SELECT id, name, WRITETIME(name) FROM shop_rf3.items WHERE id = 777;"
+                \end{lstlisting}
+                \begin{lstlisting}[language=sql]
+ id  | name     | writetime(name)
+-----+----------+------------------
+ 777 | ISLAND_3 | 1765903107702957
                 \end{lstlisting}
         \end{enumerate}
 

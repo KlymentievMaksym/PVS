@@ -37,7 +37,26 @@ services:
     container_name: cassandra-node1
     environment:
       - CASSANDRA_CLUSTER_NAME=shop_cluster
-      - CASSANDRA_RPC_ADDRESS=cassandra-node1
+      - CASSANDRA_RPC_ADDRESS=0.0.0.0
+      - CASSANDRA_BROADCAST_RPC_ADDRESS=cassandra-node1
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    ports:
+      - "9042:9042"
+    volumes:
+      - ./scripts:/scripts
+    networks:
+      - cassandra-net
+
+  cassandra-node2:
+    image: cassandra:5.0.6
+    container_name: cassandra-node2
+    environment:
+      - CASSANDRA_CLUSTER_NAME=shop_cluster
+      - CASSANDRA_RPC_ADDRESS=0.0.0.0
+      - CASSANDRA_BROADCAST_RPC_ADDRESS=cassandra-node2
       - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
       - MAX_HEAP_SIZE=512M
@@ -49,31 +68,19 @@ services:
     networks:
       - cassandra-net
 
-  cassandra-node2:
-    image: cassandra:5.0.6
-    container_name: cassandra-node2
-    environment:
-      - CASSANDRA_CLUSTER_NAME=shop_cluster
-      - CASSANDRA_RPC_ADDRESS=cassandra-node2
-      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-      - MAX_HEAP_SIZE=512M
-      - HEAP_NEWSIZE=100M
-    volumes:
-      - ./scripts:/scripts
-    networks:
-      - cassandra-net
-
   cassandra-node3:
     image: cassandra:5.0.6
     container_name: cassandra-node3
     environment:
       - CASSANDRA_CLUSTER_NAME=shop_cluster
-      - CASSANDRA_RPC_ADDRESS=cassandra-node3
+      - CASSANDRA_RPC_ADDRESS=0.0.0.0
+      - CASSANDRA_BROADCAST_RPC_ADDRESS=cassandra-node3
       - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
       - MAX_HEAP_SIZE=512M
       - HEAP_NEWSIZE=100M
+    ports:
+      - "9044:9042"
     volumes:
       - ./scripts:/scripts
     networks:
