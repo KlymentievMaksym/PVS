@@ -1,0 +1,71 @@
+\documentclass{article}
+
+\input{../../packages.tex}
+
+\graphicspath{ {../Images/} }
+
+\begin{document}
+    \begin{titlepage}
+        \begin{center}
+
+        Міністерство освіти і науки України
+        
+        НТУУ «Київський політехнічний інститут»
+        
+        Фізико-технічний інститут
+        \vspace{3.3cm}
+        
+        {\textbf{Проектування високонавантажених систем}\\Лабораторна робота No6\\Кешування з використанням Hazelcast}
+
+        \vspace{10cm}
+
+        \begin{flushright}
+            \textbf{Виконав:}\\Студент 4-го курсу\\групи ФІ-21\\Климентьєв Максим\\
+            \textbf{Перевірив:}\\\text{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}
+        \end{flushright}
+
+        \end{center}
+    \end{titlepage}
+    \newpage
+
+    \pagenumbering{gobble}
+    \tableofcontents
+    \cleardoublepage
+    \pagenumbering{arabic}
+    \setcounter{page}{3}
+
+    \newpage
+    \section{Код реалізації}
+    \newpage
+    \section{Результати}
+        На основі першого завдання з Web-counter, додати до нього Read-through та Write-through кешування.
+
+        У якості системи кешування, використати кластер Hazelcast з відповідними налаштуваннями https://docs.hazelcast.com/hazelcast/5.6/mapstore/working-with-external-data
+
+        Ідея полягає у тому, що значення каунтера зберігається у базі даних, але операції з ним відбувались не на пряму, а крізь кеш.
+
+        \begin{lstlisting}[language=python]
+
+        \end{lstlisting}
+
+        \begin{enumerate}
+            \item Налаштувати Read-through та Write-through на основі generic MapLoader та generic MapStore для БД PostgreSQL (або MySQL)
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+            \item Припускаючи, що у нас буде 4 різних каунтерів, додати в Hazelcast Map, яка відповідає таблиці БД, 4 окремих записи з різними ID (1-4) та 0 у якості початкового значення. Перевірити через прямий запит до БД, що ці записи в ній зʼявились 
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+            \item Для окремих створених ключів (каунтерів) повторити тести 1) - 4) з першої роботи, забезпечуючи коректність результатів (тобто щоб кінцевий результат був коректним) та міряючи час. Тобто тест 1 має використовувати каунтер 1, тест 2 - каунтер 2, і т.д. 
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+            \item Перевірити кінцеві значення каунтерів у БД та порівняти отримані результати з продуктивності з отриманими у першій роботі. 
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+        \end{enumerate}
+
+
+\end{document}

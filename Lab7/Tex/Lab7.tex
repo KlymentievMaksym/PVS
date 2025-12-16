@@ -1,0 +1,147 @@
+\documentclass{article}
+
+\input{../../packages.tex}
+
+\graphicspath{ {../Images/} }
+
+\begin{document}
+    \begin{titlepage}
+        \begin{center}
+
+        Міністерство освіти і науки України
+        
+        НТУУ «Київський політехнічний інститут»
+        
+        Фізико-технічний інститут
+        \vspace{3.3cm}
+        
+        {\textbf{Проектування високонавантажених систем}\\Лабораторна робота No7\\Налаштування шардінгу в MongoDB}
+
+        \vspace{10cm}
+
+        \begin{flushright}
+            \textbf{Виконав:}\\Студент 4-го курсу\\групи ФІ-21\\Климентьєв Максим\\
+            \textbf{Перевірив:}\\\text{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}
+        \end{flushright}
+
+        \end{center}
+    \end{titlepage}
+    \newpage
+
+    \pagenumbering{gobble}
+    \tableofcontents
+    \cleardoublepage
+    \pagenumbering{arabic}
+    \setcounter{page}{3}
+
+    \newpage
+    \section{Код реалізації}
+    \newpage
+    \section{Результати}
+
+        \begin{enumerate}
+            \item Сконфігуруйте 3 інстанси (сервери) MongoDB у якості шард. Ці шарди потім будуть звʼязані з Zones (https://www.mongodb.com/docs/manual/core/zone-sharding/)
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+                \begin{itemize}
+                    \item Ranged Sharding (with Zone Ranges)
+                        \begin{lstlisting}[language=python]
+
+                        \end{lstlisting}
+                    \item Zones
+                        \begin{lstlisting}[language=python]
+
+                        \end{lstlisting}
+                \end{itemize}
+            \item Створіть колекцію Users
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+        \end{enumerate}
+
+        Окрім інших атрибутів, записи User мають містити атрибут region, який може приймати одне з трьох значень region = {EU, USA, Asia}
+            \begin{lstlisting}[language=python]
+
+            \end{lstlisting}
+
+        \begin{enumerate}
+            \item Сконфігуруйте шардінг таким чином, щоб кожна з шард була проасоційована з одним з регіоном: Shard 1 - EU, Shard 2 - USA, Shard 3 - Asia
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+        \end{enumerate}
+        І записи які будуть вставлятись в колекцію Users мають зберігатись на відповідній шарді в залежності від значення region
+            \begin{lstlisting}[language=python]
+
+            \end{lstlisting}
+
+        \begin{enumerate}
+            \item Створіть колекцію Tweets
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+        \end{enumerate}
+        Серед інших атрибутів, Tweet має містити кількість лайків - атрибут likes
+            \begin{lstlisting}[language=python]
+
+            \end{lstlisting}
+
+        \begin{enumerate}
+            \item Сконфігуруйте шарди таким чином, щоб кожна з них була проасоційована з діапазоном кількості лайків (Ranged Sharding): Shard 1 - 0-100, Shard 2 - 101-200, Shard 3 - 200 - …
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+        \end{enumerate}
+        І записи які будуть вставлятись в колекцію Tweets мають зберігатись на відповідній шарді в залежності від значення likes
+            \begin{lstlisting}[language=python]
+
+            \end{lstlisting}
+
+        \begin{enumerate}
+            \item Перевірте появи шард і зон командою sh.status()
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+            \item Продемонструйте роботу шардінгу (тобто що записи зберігаються на різних нодах):
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+            \begin{itemize}
+                \item відключити одну з ноди
+                    \begin{lstlisting}[language=python]
+
+                    \end{lstlisting}
+                \item спробувати додати записи зі значеннями shard key (Ranged та Zones), що потрапляють на відключену ноду
+                    \begin{lstlisting}[language=python]
+
+                    \end{lstlisting}
+                \item спробувати додати записи зі значеннями shard key (Ranged та Zones), що потрапляють на працюючу ноду
+                    \begin{lstlisting}[language=python]
+
+                    \end{lstlisting}
+                \item спробувати знайти всі записи з shard key для Zone, яка відповідає ноді яка працює/яка не працює
+                    \begin{lstlisting}[language=python]
+
+                    \end{lstlisting}
+                \item спробувати знайти записи для shard key з певного проміжку, який входить до проміжку працюючої ноди для Ranged Sharding
+                    \begin{lstlisting}[language=python]
+
+                    \end{lstlisting}
+                \item спробувати знайти записи для shard key з певного проміжку, який входить до проміжку ноди яка не працює для Ranged Sharding
+                    \begin{lstlisting}[language=python]
+
+                    \end{lstlisting}
+            \end{itemize}
+            \item Включити відключену ноду та перевірити працездатність запитів з попереднього пункту
+                \begin{lstlisting}[language=python]
+
+                \end{lstlisting}
+        \end{enumerate}
+        Всі завдання можуть бути виконані з командного рядка
+
+        Протокол має містити команди та кінцеві налаштування з sh.status()
+            \begin{lstlisting}[language=python]
+
+            \end{lstlisting}
+\end{document}
