@@ -44,6 +44,8 @@ services:
       - HEAP_NEWSIZE=100M
     ports:
       - "9043:9042"
+    volumes:
+      - ./scripts:/scripts
     networks:
       - cassandra-net
 
@@ -57,6 +59,8 @@ services:
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
       - MAX_HEAP_SIZE=512M
       - HEAP_NEWSIZE=100M
+    volumes:
+      - ./scripts:/scripts
     networks:
       - cassandra-net
 
@@ -70,6 +74,8 @@ services:
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
       - MAX_HEAP_SIZE=512M
       - HEAP_NEWSIZE=100M
+    volumes:
+      - ./scripts:/scripts
     networks:
       - cassandra-net
 

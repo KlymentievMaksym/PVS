@@ -284,22 +284,42 @@ UN  172.18.0.4  85.23 KiB  16      68.8%             c9342fed-5dbf-4d5b-9d43-3d2
                 \end{lstlisting}
             \item Викоритовуючи cqlsh, створити три Keyspace з replication factor 1, 2, 3 з SimpleStrategy
                 \begin{lstlisting}[language=sql]
+CREATE KEYSPACE shop_rf1 
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 
+CREATE KEYSPACE shop_rf2 
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};
+
+CREATE KEYSPACE shop_rf3 
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
                 \end{lstlisting}
             \item В кожному з кейспейсів створити прості таблиці
                 \begin{lstlisting}[language=sql]
+CREATE TABLE shop_rf1.items (id int PRIMARY KEY, name text);
 
+CREATE TABLE shop_rf2.items (id int PRIMARY KEY, name text);
+
+CREATE TABLE shop_rf3.items (id int PRIMARY KEY, name text);
                 \end{lstlisting}
         \end{enumerate}
 
         \begin{enumerate}
             \item Спробуйте писати і читати в ці таблиці підключаюсь до різних нод через cqlsh.
                 \begin{lstlisting}[language=sql]
-
+INSERT INTO shop_rf1.items (id, name) VALUES (1, 'Item One');
+INSERT INTO shop_rf2.items (id, name) VALUES (1, 'Item One');
+INSERT INTO shop_rf3.items (id, name) VALUES (1, 'Item One');
+SELECT * FROM shop_rf1.items;
+SELECT * FROM shop_rf2.items;
+SELECT * FROM shop_rf3.items;
                 \end{lstlisting}
             \item Вставте дані в створені таблиці і подивіться на їх розподіл по вузлах кластера окремо для кожного з кейспесов (команда nodetool status) - має бути видно відсоток даних який зберігається на ноді
                 \begin{lstlisting}[language=sql]
-
+docker exec -it cassandra-node1 nodetool getendpoints shop_rf1 items 1
+docker exec -it cassandra-node1 nodetool getendpoints shop_rf2 items 1
+docker exec -it cassandra-node1 nodetool getendpoints shop_rf3 items 1
+                \end{lstlisting}
+                \begin{lstlisting}[language=sql]
                 \end{lstlisting}
             \item Для якогось запису з кожного з кейспейсу виведіть ноди на яких зберігаються дані - має бути видно ip-адреси вузлів на яких зберігається даний рядок
                 \begin{lstlisting}[language=sql]
