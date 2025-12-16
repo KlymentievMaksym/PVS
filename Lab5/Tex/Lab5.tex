@@ -36,9 +36,10 @@
 
     \newpage
     \section{Код реалізації}
-    % \lstinputlisting[language=sql, title=task_1.py]{../task_1.py}
-    % \lstinputlisting[language=sql, title=task_2.py]{../task_2.py}
-    % \lstinputlisting[language=sql, title=task_3.py]{../task_3.py}
+    \lstinputlisting[language=sql, title=task\_1.cql]{../scripts/task_1.cql}
+    \lstinputlisting[language=sql, title=task\_2.cql]{../scripts/task_2.cql}
+    \lstinputlisting[language=sql, title=task\_3.cql]{../scripts/task_3.cql}
+    \lstinputlisting[language=sql, title=task\_3.py]{../task_3.py}
 
     \newpage
     \section{Результати}
@@ -475,24 +476,46 @@ docker exec -it cassandra-node1 cqlsh -e "SELECT id, name, WRITETIME(name) FROM 
         Далі з 10 окремих клієнтів одночасно запустити інкерементацію каунтеру лайків по 10\_000 на кожного клієнта з різними опціями взаємодії з Cassandra.
 
         Таблиця має бути створена у Keyspace з replication factor 3.
-                \begin{lstlisting}[language=sql]
-
-                \end{lstlisting}
 
         Для створення каунтеру використовуйте спеціальний тип колонки - counter (цей тип буде підтримувати операції increment/decrement in-place):
+
+                \begin{lstlisting}[language=sql]
+CREATE KEYSPACE shop_rf3 
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
+USE shop_rf3;
+
+CREATE TABLE likes_counter (
+    id int PRIMARY KEY,
+    likes counter
+);
+
+docker exec -it cassandra-node1 cqlsh cassandra-node1 -f /scripts/task_3.cql
+                \end{lstlisting}
 
         \begin{enumerate}
             \item Вказавши у параметрах запиту Consistency Level One (це буде означати, що запис відбувається синхронно тільки на одну ноду),
                 запустіть 10 клієнтів з інкрементом по 10\_000 на кожному з них.
                 Виміряйте час виконання та перевірте чи кінцеве значення буде дорівнювати очікуваному - 100К
-                \begin{lstlisting}[language=sql]
-
+                \begin{lstlisting}[language=python, style=log]
+[TEST] CONSISTENCY ONE
+[DELETE] Deleting previous data...
+[START] Clients: 10 | Increments per client: 10000
+[RESULTS] Duration: 30.21 сек
+[RESULTS] Throughput: 3311 op/sec
+[RESULTS] Expected: 100_000
+[RESULTS] Received:  100_000
                 \end{lstlisting}
             \item Вказавши у параметрах запиту Consistency Level QUORUM (це буде означати, що запис відбувається синхронно на більшість нод),
                 запустіть 10 клієнтів з інкрементом по 10\_000 на кожному з них.
                 Виміряйте час виконання та перевірте чи кінцеве значення буде дорівнювати очікуваному - 100К
-                \begin{lstlisting}[language=sql]
-
+                \begin{lstlisting}[language=python, style=log]
+[TEST] CONSISTENCY QUORUM
+[DELETE] Deleting previous data...
+[START] Clients: 10 | Increments per client: 10000
+[RESULTS] Duration: 34.70 сек
+[RESULTS] Throughput: 2882 op/sec
+[RESULTS] Expected: 100_000
+[RESULTS] Received:  100_000
                 \end{lstlisting}
         \end{enumerate}
 
