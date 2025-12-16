@@ -273,18 +273,15 @@ SELECT customer_name, order_time, order_id, total_price, WRITETIME(total_price) 
 docker exec -it cassandra-node1 nodetool status
                 \end{lstlisting}
                 \begin{lstlisting}[style=hazellog, language=sql]
-Status=Up/Down
-|/ State=Normal/Leaving/Joining/Moving
---  Address     Load        Tokens  Owns (effective)  Host ID          
-                     Rack
 Datacenter: dc1
 ===============
 Status=Up/Down
 |/ State=Normal/Leaving/Joining/Moving
---  Address     Load       Tokens  Owns (effective)  Host ID                               Rack
-UN  172.18.0.3  97.63 KiB  16      66.7%             b8e197e4-1901-4584-8831-7813b3c07c4d  rack1
-UN  172.18.0.2  85.23 KiB  16      67.7%             5616fb9b-a5b4-4dec-a809-e638160b0aa6  rack1
-UN  172.18.0.4  80.09 KiB  16      65.6%             c258495b-7034-4f25-a879-c5ff29d021b5  rack1                \end{lstlisting}
+--  Address     Load       Tokens  Owns (effective)  Host ID                               Rack 
+UN  172.18.0.3  80.09 KiB  16      73.2%             576c84db-5321-41ed-8746-469e0958c744  rack1
+UN  172.18.0.2  194.4 KiB  16      58.0%             3c447738-3297-4c36-af79-bad2228d0479  rack1
+UN  172.18.0.4  85.23 KiB  16      68.8%             c9342fed-5dbf-4d5b-9d43-3d26d3abe248  rack1
+                \end{lstlisting}
             \item Викоритовуючи cqlsh, створити три Keyspace з replication factor 1, 2, 3 з SimpleStrategy
                 \begin{lstlisting}[language=sql]
 
