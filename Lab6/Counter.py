@@ -4,7 +4,6 @@ import threading
 import psycopg2
 
 
-
 class Counter:
     def __init__(self, database_params, info: bool = False):
         if info:
@@ -31,7 +30,7 @@ class Counter:
         self.counters.clear()
         for i in range(1, 5):
             self.counters.put(i, 0)
-        time.sleep(1) # Чекаємо завершення запису в БД
+        time.sleep(1)
 
     def close(self):
         self.client.shutdown()
@@ -99,6 +98,5 @@ if __name__ == "__main__":
     counter.run("Counter 2", 2, 2, 10000)
     counter.run("Counter 3", 3, 5, 10000)
     counter.run("Counter 4", 4, 10, 10000)
-    # time.sleep(2) # Даємо трохи часу, якщо є черга запису (хоча у вас write-delay:0)
     counter.get_info()
     counter.close()
