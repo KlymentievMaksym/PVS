@@ -1,5 +1,5 @@
 var databaseName = "RLS";
-var database= db.getSiblingDB(databaseName);
+var database = db.getSiblingDB(databaseName);
 var NameUsers = databaseName + ".Users";
 var NameTweets = databaseName + ".Tweets";
 
@@ -61,3 +61,37 @@ sh.updateZoneKeyRange(NameTweets, { likes: 201 }, { likes: MaxKey }, high);
 
 print("[START] Cluster setup complete!");
 print(sh.status());
+
+print("[START] Inserting...");
+var tweets = [
+    { m: "Low1", l: 5 }, { m: "Low2", l: 50 }, { m: "Low3", l: 99 },    // -> Shard 1
+    { m: "Mid1", l: 105 }, { m: "Mid2", l: 150 }, { m: "Mid3", l: 199 }, // -> Shard 2
+    { m: "High1", l: 300 }, { m: "High2", l: 5000 }, { m: "High3", l: 9999 } // -> Shard 3
+];
+
+tweets.forEach(function(t) {
+   database.Tweets.insertOne({ msg: t.m, likes: t.l });
+});
+
+database.Users.insertMany([
+   { region: "Asia", name: "user_as_1" },
+   { region: "Asia", name: "user_as_2" },
+   { region: "Asia", name: "user_as_3" },
+   { region: "Asia", name: "user_as_4" }
+])
+for (let i = 0; i < 5000; i++)
+{
+   database.Users.insertOne({
+      region: i % 2 === 0 ? "EU" : "USA",
+      name: "user_" + i
+   })
+}
+
+print(database.Users.getShardDistribution());
+print(database.Users.countDocuments());
+try { database.Users.deleteMany({}); } catch(e) {}
+
+db.adminCommand({ flushRouterConfig: "RLS.Users" });
+db.adminCommand({ flushRouterConfig: "RLS.Tweets" });
+
+print("[START] Setup complete!");

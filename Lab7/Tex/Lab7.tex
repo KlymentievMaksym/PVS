@@ -36,8 +36,13 @@
 
     \newpage
     \section{Код реалізації}
-    \newpage
+    \lstinputlisting[title=all\_tests.bat, language=bash]{../scripts/all_tests.bat}
+    \lstinputlisting[title=setup.bat, language=bash]{../scripts/setup.bat}
+    \lstinputlisting[title=crash\_test.bat, language=bash]{../scripts/crash_test.bat}
+    \lstinputlisting[title=setup.js, language=bash]{../scripts/setup.js}
+    \lstinputlisting[title=crash\_test.js, language=bash]{../scripts/crash_test.js}
 
+    \newpage
     \section{Результати}
         \begin{enumerate}
             \item Сконфігуруйте 3 інстанси (сервери) MongoDB у якості шард. Ці шарди потім будуть звʼязані з Zones (https://www.mongodb.com/docs/manual/core/zone-sharding/)
@@ -219,43 +224,344 @@ databases
                 \end{lstlisting}
             \item Продемонструйте роботу шардінгу (тобто що записи зберігаються на різних нодах):
                 \begin{lstlisting}[language=python]
+print(database.Users.getShardDistribution());
+print(database.Users.countDocuments());
 
+Shard rs_shard3 at rs_shard3/shard3:27017
+{
+  data: '236B',
+  docs: 4,
+  chunks: 1,
+  'estimated data per chunk': '236B',
+  'estimated docs per chunk': 4
+}
+---
+Shard rs_shard2 at rs_shard2/shard2:27017
+{
+  data: '141KiB',
+  docs: 2500,
+  chunks: 1,
+  'estimated data per chunk': '141KiB',
+  'estimated docs per chunk': 2500
+}
+---
+Shard rs_shard1 at rs_shard1/shard1:27017
+{
+  data: '139KiB',
+  docs: 3255,
+  chunks: 5,
+  'estimated data per chunk': '27KiB',
+  'estimated docs per chunk': 651
+}
+---
+Totals
+{
+  data: '280KiB',
+  docs: 5759,
+  chunks: 7,
+  'Shard rs_shard3': [
+    '0.08 % data',
+    '0.06 % docs in cluster',
+    '59B avg obj size on shard'
+  ],
+  'Shard rs_shard2': [
+    '50.22 % data',
+    '43.41 % docs in cluster',
+    '57B avg obj size on shard'
+  ],
+  'Shard rs_shard1': [
+    '49.69 % data',
+    '56.52 % docs in cluster',
+    '56B avg obj size on shard'
+  ]
+}
+
+5004
                 \end{lstlisting}
             \begin{itemize}
                 \item відключити одну з ноди
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[style=log]
+docker stop shard2
                     \end{lstlisting}
                 \item спробувати додати записи зі значеннями shard key (Ranged та Zones), що потрапляють на відключену ноду
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[style=log]
+[TEST] INSERT in zone USA (Shard 2 - Down)
+[ERROR] Write results unavailable from failing to target a host in the shard rs_shard2 :: caused by :: Could not find host matching read preference { mode: "primary" } for set rs_shard2
                     \end{lstlisting}
                 \item спробувати додати записи зі значеннями shard key (Ranged та Zones), що потрапляють на працюючу ноду
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[style=log]
+[TEST] INSERT in zone EU (Shard 1 - Up)
+[SUCCESS] (5ms): {"acknowledged":true,"insertedId":"69433156d8d1a447a29dc29e"}
                     \end{lstlisting}
                 \item спробувати знайти всі записи з shard key для Zone, яка відповідає ноді яка працює/яка не працює
-                    \begin{lstlisting}[language=python]
+                    \begin{lstlisting}[style=log]
+# Воно думає, що щось є на rs_shard2, тому падає повністю...
 
+[TEST] FIND in zone USA (Shard 2 - Down)
+[ERROR] Could not find host matching read preference { mode: "primary" } for set rs_shard2
+[TEST] FIND in zone EU (Shard 1 - Up)
+[ERROR] Could not find host matching read preference { mode: "primary" } for set rs_shard2
                     \end{lstlisting}
                 \item спробувати знайти записи для shard key з певного проміжку, який входить до проміжку працюючої ноди для Ranged Sharding
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[style=log]
+# Воно думає, що щось є на rs_shard2, тому падає повністю...
+[TEST] RANGE FIND Likes 0-100 (Shard 1 - Up)
+[ERROR] Could not find host matching read preference { mode: "primary" } for set rs_shard2
                     \end{lstlisting}
                 \item спробувати знайти записи для shard key з певного проміжку, який входить до проміжку ноди яка не працює для Ranged Sharding
-                    \begin{lstlisting}[language=python]
-
+                    \begin{lstlisting}[style=log]
+[TEST] RANGE FIND Likes 101-200 (Shard 2 - Down)
+[ERROR] Could not find host matching read preference { mode: "primary" } for set rs_shard2
                     \end{lstlisting}
             \end{itemize}
             \item Включити відключену ноду та перевірити працездатність запитів з попереднього пункту
-                \begin{lstlisting}[language=python]
+                \begin{lstlisting}[style=log]
+docker start shard2
 
+[TEST] INSERT in zone USA (Shard 2 - Down)
+[SUCCESS] (1378ms): {"acknowledged":true,"insertedId":"694333aaf203c33bc09dc29d"}
+[TEST] INSERT in zone EU (Shard 1 - Up)
+[SUCCESS] (5ms): {"acknowledged":true,"insertedId":"694333acf203c33bc09dc29e"}
+[TEST] FIND in zone USA (Shard 2 - Down)
+[SUCCESS] (3ms): [{"_id":"694333aaf203c33bc09dc29d","name":"DeadUser","region":"USA"}]
+[TEST] FIND in zone EU (Shard 1 - Up)
+[SUCCESS] (3ms): [{"_id":"6943336d9bc5bf5c299dc29e","name":"LiveUser","region":"EU"},{"_id":"694333acf203c33bc09dc29e","name":"LiveUser","region":"EU"}]
+[TEST] RANGE FIND Likes 101-200 (Shard 2 - Down)
+[SUCCESS] (11ms): [{"_id":"69433351712c168cfc9dc2a0","msg":"Mid1","likes":105},{"_id":"69433351712c168cfc9dc2a1","msg":"Mid2","likes":150},{"_id":"69433351712c168cfc9dc2a2","msg":"Mid3","likes":199}]
+[TEST] RANGE FIND Likes 0-100 (Shard 1 - Up)
+[SUCCESS] (2ms): [{"_id":"69433351712c168cfc9dc29d","msg":"Low1","likes":5},{"_id":"69433351712c168cfc9dc29e","msg":"Low2","likes":50},{"_id":"69433351712c168cfc9dc29f","msg":"Low3","likes":99}]
                 \end{lstlisting}
         \end{enumerate}
         Всі завдання можуть бути виконані з командного рядка
 
         Протокол має містити команди та кінцеві налаштування з sh.status()
             \begin{lstlisting}[language=python]
-
+shardingVersion
+{
+  _id: ObjectId('694330f36bea9194f99ed960'),
+  clusterId: ObjectId('694330f36bea9194f99ed95f')
+}
+---
+shards
+[
+  {
+    _id: 'rs_shard1',
+    host: 'rs_shard1/shard1:27017',
+    state: 1,
+    topologyTime: Timestamp({ t: 1766011126, i: 32 }),
+    replSetConfigVersion: Long('-1'),
+    tags: [ 'ZONE_EU', 'LIKES_LOW' ]
+  },
+  {
+    _id: 'rs_shard2',
+    host: 'rs_shard2/shard2:27017',
+    state: 1,
+    topologyTime: Timestamp({ t: 1766011126, i: 89 }),
+    replSetConfigVersion: Long('1'),
+    tags: [ 'ZONE_USA', 'LIKES_MID' ]
+  },
+  {
+    _id: 'rs_shard3',
+    host: 'rs_shard3/shard3:27017',
+    state: 1,
+    topologyTime: Timestamp({ t: 1766011126, i: 144 }),
+    replSetConfigVersion: Long('-1'),
+    tags: [ 'ZONE_ASIA', 'LIKES_HIGH' ]
+  }
+]
+---
+active mongoses
+[ { '8.2.2': 1 } ]
+---
+autosplit
+{ 'Currently enabled': 'yes' }
+---
+balancer
+{
+  'Currently enabled': 'yes',
+  'Failed balancer rounds in last 5 attempts': 0,
+  'Currently running': 'no',
+  'Migration Results for the last 24 hours': { '36': 'Success' }
+}
+---
+shardedDataDistribution
+[
+  {
+    ns: 'config.system.sessions',
+    shards: [
+      {
+        shardName: 'rs_shard1',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 142,
+        ownedSizeBytes: 14058,
+        orphanedSizeBytes: 0
+      }
+    ]
+  },
+  {
+    ns: 'RLS.Tweets',
+    shards: [
+      {
+        shardName: 'rs_shard1',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 3,
+        ownedSizeBytes: 141,
+        orphanedSizeBytes: 0
+      },
+      {
+        shardName: 'rs_shard3',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 3,
+        ownedSizeBytes: 144,
+        orphanedSizeBytes: 0
+      },
+      {
+        shardName: 'rs_shard2',
+        numOrphanedDocs: 6,
+        numOwnedDocuments: 3,
+        ownedSizeBytes: 141,
+        orphanedSizeBytes: 282
+      }
+    ]
+  },
+  {
+    ns: 'RLS.Users',
+    shards: [
+      {
+        shardName: 'rs_shard1',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 2,
+        ownedSizeBytes: 112,
+        orphanedSizeBytes: 0
+      },
+      {
+        shardName: 'rs_shard3',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 0,
+        ownedSizeBytes: 0,
+        orphanedSizeBytes: 0
+      },
+      {
+        shardName: 'rs_shard2',
+        numOrphanedDocs: 2048,
+        numOwnedDocuments: 1,
+        ownedSizeBytes: 56,
+        orphanedSizeBytes: 114688
+      }
+    ]
+  }
+]
+---
+databases
+[
+  {
+    database: { _id: 'config', primary: 'config', partitioned: true },
+    collections: {
+      'config.system.sessions': {
+        shardKey: { _id: 1 },
+        unique: false,
+        balancing: true,
+        allowMigrations: true,
+        chunkMetadata: [ { shard: 'rs_shard1', nChunks: 1 } ],
+        chunks: [
+          { min: { _id: MinKey() }, max: { _id: MaxKey() }, 'on shard': 'rs_shard1', 'last modified': Timestamp({ t: 1, i: 0 }) }
+        ],
+        tags: []
+      }
+    }
+  },
+  {
+    database: {
+      _id: 'RLS',
+      primary: 'rs_shard2',
+      version: {
+        uuid: UUID('ad96755e-8b05-4b0e-b8e2-096840b04e3e'),
+        timestamp: Timestamp({ t: 1766011126, i: 172 }),
+        lastMod: 1
+      }
+    },
+    collections: {
+      'RLS.Tweets': {
+        shardKey: { likes: 1 },
+        unique: false,
+        balancing: true,
+        allowMigrations: true,
+        chunkMetadata: [
+          { shard: 'rs_shard1', nChunks: 1 },
+          { shard: 'rs_shard2', nChunks: 2 },
+          { shard: 'rs_shard3', nChunks: 1 }
+        ],
+        chunks: [
+          { min: { likes: MinKey() }, max: { likes: 0 }, 'on shard': 'rs_shard2', 'last modified': Timestamp({ t: 3, i: 1 }) },
+          { min: { likes: 0 }, max: { likes: 101 }, 'on shard': 'rs_shard1', 'last modified': Timestamp({ t: 2, i: 0 }) },
+          { min: { likes: 101 }, max: { likes: 201 }, 'on shard': 'rs_shard2', 'last modified': Timestamp({ t: 1, i: 3 }) },
+          { min: { likes: 201 }, max: { likes: MaxKey() }, 'on shard': 'rs_shard3', 'last modified': Timestamp({ t: 3, i: 0 }) }
+        ],
+        tags: [
+          { tag: 'LIKES_LOW', min: { likes: 0 }, max: { likes: 101 } },
+          {
+            tag: 'LIKES_MID',
+            min: { likes: 101 },
+            max: { likes: 201 }
+          },
+          {
+            tag: 'LIKES_HIGH',
+            min: { likes: 201 },
+            max: { likes: MaxKey() }
+          }
+        ]
+      },
+      'RLS.Users': {
+        shardKey: { region: 1, _id: 1 },
+        unique: false,
+        balancing: true,
+        allowMigrations: true,
+        chunkMetadata: [
+          { shard: 'rs_shard1', nChunks: 1 },
+          { shard: 'rs_shard2', nChunks: 5 },
+          { shard: 'rs_shard3', nChunks: 1 }
+        ],
+        chunks: [
+          { min: { region: MinKey(), _id: MinKey() }, max: { region: 'Asia', _id: MinKey() }, 'on shard': 'rs_shard2', 'last modified': Timestamp({ t: 3, i: 1 }) },
+          { min: { region: 'Asia', _id: MinKey() }, max: { region: 'Asia', _id: MaxKey() }, 'on shard': 'rs_shard3', 'last modified': Timestamp({ t: 2, i: 0 }) },
+          { min: { region: 'Asia', _id: MaxKey() }, max: { region: 'EU', _id: MinKey() }, 'on shard': 'rs_shard2', 'last modified': Timestamp({ t: 1, i: 3 }) },
+          { min: { region: 'EU', _id: MinKey() }, max: { region: 'EU', _id: MaxKey() }, 'on shard': 'rs_shard1', 'last modified': Timestamp({ t: 3, i: 0 }) },
+          { min: { region: 'EU', _id: MaxKey() }, max: { region: 'USA', _id: MinKey() }, 'on shard': 'rs_shard2', 'last modified': Timestamp({ t: 1, i: 5 }) },
+          { min: { region: 'USA', _id: MinKey() }, max: { region: 'USA', _id: MaxKey() }, 'on shard': 'rs_shard2', 'last modified': Timestamp({ t: 1, i: 6 }) },
+          { min: { region: 'USA', _id: MaxKey() }, max: { region: MaxKey(), _id: MaxKey() }, 'on shard': 'rs_shard2', 'last modified': Timestamp({ t: 1, i: 7 }) }
+        ],
+        tags: [
+          {
+            tag: 'ZONE_ASIA',
+            min: { region: 'Asia', _id: MinKey() },
+            max: { region: 'Asia', _id: MaxKey() }
+          },
+          {
+            tag: 'ZONE_EU',
+            min: { region: 'EU', _id: MinKey() },
+            max: { region: 'EU', _id: MaxKey() }
+          },
+          {
+            tag: 'ZONE_USA',
+            min: { region: 'USA', _id: MinKey() },
+            max: { region: 'USA', _id: MaxKey() }
+          }
+        ]
+      }
+    }
+  },
+  {
+    database: {
+      _id: 'test',
+      primary: 'rs_shard3',
+      version: {
+        uuid: UUID('4da15db4-7310-490d-89ce-db43660d5704'),
+        timestamp: Timestamp({ t: 1766012174, i: 7 }),
+        lastMod: 1
+      }
+    },
+    collections: {}
+  }
+]
             \end{lstlisting}
 \end{document}
