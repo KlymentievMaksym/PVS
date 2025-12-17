@@ -1,0 +1,7 @@
+hazelcast:
+  map:
+    counters:
+      map-store:
+        enabled: true
+        class-name: CounterMapStore
+        write-delay-seconds: 0

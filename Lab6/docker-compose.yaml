@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:18.1
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: counter_db
+    volumes:
+      - postgre-data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 0.5s
+      retries: 30
+
+  hazelcast:
+    build: .
+    container_name: hazelcast
+    ports:
+      - "5701:5701"
+    environment:
+      - HZ_NETWORK_PUBLICADDRESS=localhost:5701
+      - JAVA_OPTS=-Dhazelcast.config=/opt/hazelcast/config/hazelcast.yaml
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgre-data:
