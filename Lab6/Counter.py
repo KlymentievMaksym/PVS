@@ -38,7 +38,7 @@ class Counter:
     def get_info(self):
         connection = self._get_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT id, val FROM counters ORDER BY id")
+        cursor.execute("SELECT id, value FROM counters ORDER BY id")
         data = cursor.fetchall()
         cursor.close()
         connection.close()
@@ -51,8 +51,8 @@ class Counter:
         for _ in range(requests_count):
             self.counters.lock(counter_id)
             try:
-                val = self.counters.get(counter_id)
-                self.counters.put(counter_id, val + 1)
+                value = self.counters.get(counter_id)
+                self.counters.put(counter_id, value + 1)
             finally:
                 self.counters.unlock(counter_id)
 
