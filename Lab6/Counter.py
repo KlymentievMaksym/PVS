@@ -47,8 +47,8 @@ class Counter:
             print(f"[INFO] Data: {data}")
         return data
 
-    def client_task(self, counter_id, requests_count):
-        for _ in range(requests_count):
+    def client_task(self, counter_id, increments):
+        for _ in range(increments):
             self.counters.lock(counter_id)
             try:
                 value = self.counters.get(counter_id)
