@@ -1,5 +1,7 @@
 var databaseName = "RLS";
 var database= db.getSiblingDB(databaseName);
+var NameUsers = databaseName + ".Users";
+var NameTweets = databaseName + ".Tweets";
 
 var rs1 = "rs_shard1";
 var rs2 = "rs_shard2";
@@ -15,8 +17,6 @@ var high = "LIKES_HIGH";
 sh.addShard(rs1 + "/shard1:27017");
 sh.addShard(rs2 + "/shard2:27017");
 sh.addShard(rs3 + "/shard3:27017");
-
-print(sh.status());
 
 sh.enableSharding(databaseName);
 
@@ -42,19 +42,22 @@ sh.addShardToZone(rs2, mid);
 sh.addShardToZone(rs3, high);
 
 print("[START] setting regions for Users...");
-database.Users.createIndex({ region: 1 });
-sh.shardCollection(databaseName + ".Users", { region: 1 });
+try { database.Users.drop(); } catch(e) {}
+database.Users.createIndex({ region: 1, _id: 1 });
+sh.shardCollection(NameUsers, { region: 1, _id: 1 });
 
-sh.updateZoneKeyRange(databaseName + ".Users", { region: "EU" }, { region: "EV" }, eu);
-sh.updateZoneKeyRange(databaseName + ".Users", { region: "USA" }, { region: "USB" }, usa);
-sh.updateZoneKeyRange(databaseName + ".Users", { region: "Asia" }, { region: "Asib" }, asia);
+sh.updateZoneKeyRange(NameUsers, { region: "EU", _id: MinKey }, { region: "EU", _id: MaxKey }, eu);
+sh.updateZoneKeyRange(NameUsers, { region: "USA", _id: MinKey }, { region: "USA", _id: MaxKey }, usa);
+sh.updateZoneKeyRange(NameUsers, { region: "Asia", _id: MinKey }, { region: "Asia", _id: MaxKey }, asia);
 
 print("[START] setting Tweets...");
+try { database.Tweets.drop(); } catch(e) {}
 database.Tweets.createIndex({ likes: 1 });
-sh.shardCollection(databaseName + ".Tweets", { likes: 1 });
+sh.shardCollection(NameTweets, { likes: 1 });
 
-sh.updateZoneKeyRange(databaseName + ".Tweets", { likes: 0 }, { likes: 101 }, low);
-sh.updateZoneKeyRange(databaseName + ".Tweets", { likes: 101 }, { likes: 201 }, mid);
-sh.updateZoneKeyRange(databaseName + ".Tweets", { likes: 201 }, { likes: MaxKey }, high);
+sh.updateZoneKeyRange(NameTweets, { likes: 0 }, { likes: 101 }, low);
+sh.updateZoneKeyRange(NameTweets, { likes: 101 }, { likes: 201 }, mid);
+sh.updateZoneKeyRange(NameTweets, { likes: 201 }, { likes: MaxKey }, high);
 
 print("[START] Cluster setup complete!");
+print(sh.status());

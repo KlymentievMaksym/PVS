@@ -41,67 +41,181 @@
     \section{Результати}
         \begin{enumerate}
             \item Сконфігуруйте 3 інстанси (сервери) MongoDB у якості шард. Ці шарди потім будуть звʼязані з Zones (https://www.mongodb.com/docs/manual/core/zone-sharding/)
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
                 \begin{itemize}
                     \item Ranged Sharding (with Zone Ranges)
-                        \begin{lstlisting}[language=python]
-
-                        \end{lstlisting}
                     \item Zones
-                        \begin{lstlisting}[language=python]
-
-                        \end{lstlisting}
                 \end{itemize}
             \item Створіть колекцію Users
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
         \end{enumerate}
 
         Окрім інших атрибутів, записи User мають містити атрибут region, який може приймати одне з трьох значень region = {EU, USA, Asia}
-            \begin{lstlisting}[language=python]
-
-            \end{lstlisting}
 
         \begin{enumerate}
             \item Сконфігуруйте шардінг таким чином, щоб кожна з шард була проасоційована з одним з регіоном: Shard 1 - EU, Shard 2 - USA, Shard 3 - Asia
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
         \end{enumerate}
-        І записи які будуть вставлятись в колекцію Users мають зберігатись на відповідній шарді в залежності від значення region
-            \begin{lstlisting}[language=python]
 
-            \end{lstlisting}
+        І записи які будуть вставлятись в колекцію Users мають зберігатись на відповідній шарді в залежності від значення region
 
         \begin{enumerate}
             \item Створіть колекцію Tweets
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
         \end{enumerate}
-        Серед інших атрибутів, Tweet має містити кількість лайків - атрибут likes
-            \begin{lstlisting}[language=python]
 
-            \end{lstlisting}
+        Серед інших атрибутів, Tweet має містити кількість лайків - атрибут likes
 
         \begin{enumerate}
             \item Сконфігуруйте шарди таким чином, щоб кожна з них була проасоційована з діапазоном кількості лайків (Ranged Sharding): Shard 1 - 0-100, Shard 2 - 101-200, Shard 3 - 200 - …
-                \begin{lstlisting}[language=python]
-
-                \end{lstlisting}
         \end{enumerate}
         І записи які будуть вставлятись в колекцію Tweets мають зберігатись на відповідній шарді в залежності від значення likes
-            \begin{lstlisting}[language=python]
-
-            \end{lstlisting}
 
         \begin{enumerate}
             \item Перевірте появи шард і зон командою sh.status()
                 \begin{lstlisting}[language=python]
-
+shardingVersion
+{
+  _id: ObjectId('69431a48b58cf6b823272255'),
+  clusterId: ObjectId('69431a48b58cf6b823272254')
+}
+---
+shards
+[
+  {
+    _id: 'rs_shard1',
+    host: 'rs_shard1/shard1:27017',
+    state: 1,
+    topologyTime: Timestamp({ t: 1766005323, i: 32 }),
+    replSetConfigVersion: Long('-1'),
+    tags: [ 'ZONE_EU', 'LIKES_LOW' ]
+  },
+  {
+    _id: 'rs_shard2',
+    host: 'rs_shard2/shard2:27017',
+    state: 1,
+    topologyTime: Timestamp({ t: 1766005323, i: 89 }),
+    replSetConfigVersion: Long('-1'),
+    tags: [ 'ZONE_USA', 'LIKES_MID' ]
+  },
+  {
+    _id: 'rs_shard3',
+    host: 'rs_shard3/shard3:27017',
+    state: 1,
+    topologyTime: Timestamp({ t: 1766005323, i: 144 }),
+    replSetConfigVersion: Long('-1'),
+    tags: [ 'ZONE_ASIA', 'LIKES_HIGH' ]
+  }
+]
+---
+active mongoses
+[ { '8.2.2': 1 } ]
+---
+autosplit
+{ 'Currently enabled': 'yes' }
+---
+balancer
+{
+  'Currently enabled': 'yes',
+  'Failed balancer rounds in last 5 attempts': 0,
+  'Currently running': 'no',
+  'Migration Results for the last 24 hours': 'No recent migrations'
+}
+---
+shardedDataDistribution
+[
+  {
+    ns: 'RLS.Users',
+    shards: [
+      {
+        shardName: 'rs_shard1',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 0,
+        ownedSizeBytes: 0,
+        orphanedSizeBytes: 0
+      }
+    ]
+  },
+  {
+    ns: 'RLS.Tweets',
+    shards: [
+      {
+        shardName: 'rs_shard1',
+        numOrphanedDocs: 0,
+        numOwnedDocuments: 0,
+        ownedSizeBytes: 0,
+        orphanedSizeBytes: 0
+      }
+    ]
+  }
+]
+---
+databases
+[
+  {
+    database: { _id: 'config', primary: 'config', partitioned: true },
+    collections: {}
+  },
+  {
+    database: {
+      _id: 'RLS',
+      primary: 'rs_shard1',
+      version: {
+        uuid: UUID('38c823ff-2f01-4dd9-8cd3-9aa806cef7b3'),
+        timestamp: Timestamp({ t: 1766005323, i: 172 }),
+        lastMod: 1
+      }
+    },
+    collections: {
+      'RLS.Tweets': {
+        shardKey: { likes: 1 },
+        unique: false,
+        balancing: true,
+        allowMigrations: true,
+        chunkMetadata: [ { shard: 'rs_shard1', nChunks: 1 } ],
+        chunks: [
+          { min: { likes: MinKey() }, max: { likes: MaxKey() }, 'on shard': 'rs_shard1', 'last modified': Timestamp({ t: 1, i: 0 }) }
+        ],
+        tags: [
+          { tag: 'LIKES_LOW', min: { likes: 0 }, max: { likes: 101 } },
+          {
+            tag: 'LIKES_MID',
+            min: { likes: 101 },
+            max: { likes: 201 }
+          },
+          {
+            tag: 'LIKES_HIGH',
+            min: { likes: 201 },
+            max: { likes: MaxKey() }
+          }
+        ]
+      },
+      'RLS.Users': {
+        shardKey: { region: 1, _id: 1 },
+        unique: false,
+        balancing: true,
+        allowMigrations: true,
+        chunkMetadata: [ { shard: 'rs_shard1', nChunks: 1 } ],
+        chunks: [
+          { min: { region: MinKey(), _id: MinKey() }, max: { region: MaxKey(), _id: MaxKey() }, 'on shard': 'rs_shard1', 'last modified': Timestamp({ t: 1, i: 0 }) }
+        ],
+        tags: [
+          {
+            tag: 'ZONE_ASIA',
+            min: { region: 'Asia', _id: MinKey() },
+            max: { region: 'Asia', _id: MaxKey() }
+          },
+          {
+            tag: 'ZONE_EU',
+            min: { region: 'EU', _id: MinKey() },
+            max: { region: 'EU', _id: MaxKey() }
+          },
+          {
+            tag: 'ZONE_USA',
+            min: { region: 'USA', _id: MinKey() },
+            max: { region: 'USA', _id: MaxKey() }
+          }
+        ]
+      }
+    }
+  }
+]
                 \end{lstlisting}
             \item Продемонструйте роботу шардінгу (тобто що записи зберігаються на різних нодах):
                 \begin{lstlisting}[language=python]

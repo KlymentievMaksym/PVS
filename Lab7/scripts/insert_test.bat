@@ -1,0 +1,1 @@
+docker exec -it mongos mongosh -f "scripts/insert_test.js"
