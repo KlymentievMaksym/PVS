@@ -50,7 +50,6 @@ class Counter:
 
     def client_task(self, counter_id, requests_count):
         for _ in range(requests_count):
-            # Використовуємо блокування для атомарності (щоб не було lost updates)
             self.counters.lock(counter_id)
             try:
                 val = self.counters.get(counter_id)
@@ -81,8 +80,8 @@ class Counter:
 
         result = self.counters.get(counter_id)
         if self.info:
-            print(f"[RESULT] Time: {duration:.4f} sec")
-            print(f"[RESULT] Throughput: {throughput:.2f}")
+            print(f"[RESULT] Time: {duration:.2f} sec")
+            print(f"[RESULT] Throughput: {throughput:.2f} increments/sec")
             print(f"[RESULT] Received: {result:_} ({result/expected*100:.2f}% from Expected: {expected:_})")
 
 
